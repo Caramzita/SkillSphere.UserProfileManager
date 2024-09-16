@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Serilog" Version="4.0.1" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="SkillSphere.Infrastructure.Consul" Version="1.0.0" />
+    <PackageReference Include="SkillSphere.Infrastructure.Security" Version="1.0.3" />
+    <PackageReference Include="SkillSphere.Infrastructure.UseCases" Version="1.0.0" />
+    <PackageReference Include="SkillSphere.Infrastructure.UseCases.DI" Version="1.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SkillSphere.UserProfileManager.Contracts\SkillSphere.UserProfileManager.Contracts.csproj" />
+    <ProjectReference Include="..\SkillSphere.UserProfileManager.Core\SkillSphere.UserProfileManager.Core.csproj" />
+    <ProjectReference Include="..\SkillSphere.UserProfileManager.DataAccess\SkillSphere.UserProfileManager.DataAccess.csproj" />
+    <ProjectReference Include="..\SkillSphere.UserProfileManager.UseCases\SkillSphere.UserProfileManager.UseCases.csproj" />
+  </ItemGroup>
+
+</Project>
