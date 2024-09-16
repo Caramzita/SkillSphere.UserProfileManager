@@ -5,8 +5,6 @@ namespace SkillSphere.UserProfileManager.Core.Interfaces;
 
 public interface IGoalRepository
 {
-    Task<IDbContextTransaction> BeginTransactionAsync();
-
     Task<IEnumerable<Goal>> GetAllGoals(Guid userId);
 
     Task<Goal> GetGoalById(Guid id, Guid userId);

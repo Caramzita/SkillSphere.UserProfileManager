@@ -19,11 +19,6 @@ public class SkillRepository : ISkillRepository
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync()
-    {
-        return await _context.Database.BeginTransactionAsync();
-    }
-
     public async Task<IEnumerable<Skill>> GetAllSkills(Guid userId)
     {
         var entities = await _context.Skills

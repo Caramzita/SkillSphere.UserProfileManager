@@ -1,11 +1,9 @@
-﻿namespace SkillSphere.UserProfileManager.DataAccess.Entities;
+﻿using SkillSphere.UserProfileManager.Core.Models;
 
-public class LearningHistoryEntity
+namespace SkillSphere.UserProfileManager.DataAccess.Entities;
+
+public class LearningHistoryEntity : BaseEntity
 {
-    public Guid Id { get; set; }
-
-    public Guid UserId { get; set; }
-
     public string CourseTitle { get; set; } = string.Empty;
 
     public DateTime CompletedDate { get; set; }

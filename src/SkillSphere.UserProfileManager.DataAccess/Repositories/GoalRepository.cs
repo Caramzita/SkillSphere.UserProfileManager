@@ -19,11 +19,6 @@ public class GoalRepository : IGoalRepository
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<IDbContextTransaction> BeginTransactionAsync()
-    {
-        return await _context.Database.BeginTransactionAsync();
-    }
-
     public async Task<IEnumerable<Goal>> GetAllGoals(Guid userId)
     {
         var entities = await _context.Goals

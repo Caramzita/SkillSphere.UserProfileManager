@@ -5,8 +5,6 @@ namespace SkillSphere.UserProfileManager.Core.Interfaces;
 
 public interface ISkillRepository
 {
-    Task<IDbContextTransaction> BeginTransactionAsync();
-
     Task<IEnumerable<Skill>> GetAllSkills(Guid userId);
 
     Task<Skill> GetSkillById(Guid id, Guid userId);
