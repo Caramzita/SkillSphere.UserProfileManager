@@ -6,13 +6,12 @@ namespace SkillSphere.UserProfileManager.UseCases.Goals.Commands.AddGoal;
 
 public class AddGoalCommand : IRequest<Result<Goal>>
 {
-    public Guid UserId { get; }
+    public Guid UserId { get; set; }
 
     public string Title { get; }
 
-    public AddGoalCommand(Guid userId, string title)
+    public AddGoalCommand(string title)
     {
-        UserId = userId;
         Title = title;
     }
 }

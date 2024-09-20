@@ -7,12 +7,13 @@ using SkillSphere.Infrastructure.UseCases.DI;
 using SkillSphere.UserProfileManager.DataAccess;
 using System.Reflection;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.CreateProfile;
-using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.DataAccess.Repositories;
 using Microsoft.EntityFrameworkCore;
-using SkillSphere.UserProfileManager.API;
 using SkillSphere.Infrastructure.Security.AuthServices;
 using SkillSphere.Infrastructure.Security.UserAccessor;
+using SkillSphere.UserProfileManager.Core.Interfaces;
+
+namespace SkillSphere.UserProfileManager.API;
 
 public class Program
 {
@@ -86,15 +87,14 @@ public class Program
             options.UseNpgsql(configuration["DatabaseConnection"]));
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(CreateProfileCommand).Assembly));
-        services.AddAutoMapper(typeof(RepositoryMappingProfile).Assembly, typeof(ControllerMappingProfile).Assembly);
+        services.AddAutoMapper(typeof(ControllerMappingProfile).Assembly);
 
         services.AddHttpClient<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IUserAccessor, UserAccessor>();
 
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
-        services.AddScoped<IGoalRepository, GoalRepository>();
-        services.AddScoped<ILearningHistoryRepository, LearningHistoryRepository>();
-        services.AddScoped<ISkillRepository, SkillRepository>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 

@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -18,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SkillSphere.UserProfileManager.Contracts\SkillSphere.UserProfileManager.Contracts.csproj" />
     <ProjectReference Include="..\SkillSphere.UserProfileManager.Core\SkillSphere.UserProfileManager.Core.csproj" />
   </ItemGroup>
 

@@ -1,64 +1,61 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using SkillSphere.Infrastructure.UseCases;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.Core.Models;
-using SkillSphere.UserProfileManager.DataAccess.Entities;
 
 namespace SkillSphere.UserProfileManager.UseCases.Goals.Commands.AddGoal;
 
 public class AddGoalCommandHandler : IRequestHandler<AddGoalCommand, Result<Goal>>
 {
-    //private readonly IGoalRepository _goalRepository;
-    private readonly IRepository<GoalEntity> _goalRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    private readonly IUserProfileRepository _userProfileRepository;
+    private readonly IUserProfileRepository _userProfileRepository; 
+
+    private readonly IRepository<Goal> _goalRepository;
 
     private readonly ILogger<AddGoalCommandHandler> _logger;
 
-    private readonly IMapper _mapper;
-
-    public AddGoalCommandHandler(IRepository<GoalEntity> goalRepository,
-        IUserProfileRepository userProfileRepository,
+    public AddGoalCommandHandler(IUnitOfWork unitOfWork,
+        IRepository<Goal> goalRepository,
         ILogger<AddGoalCommandHandler> logger,
-        IMapper mapper)
+        IUserProfileRepository userProfileRepository)
     {
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _goalRepository = goalRepository ?? throw new ArgumentNullException(nameof(goalRepository));
-        _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _userProfileRepository = userProfileRepository;
     }
 
     public async Task<Result<Goal>> Handle(AddGoalCommand request, CancellationToken cancellationToken)
     {
-        var userProfile = await _userProfileRepository.GetProfileByUserId(request.UserId).ConfigureAwait(false);
+        var userProfile = await _userProfileRepository.GetProfileByUserId(request.UserId);
 
         if (userProfile == null)
         {
             return Result<Goal>.Invalid("Профиль пользователя не найден");
         }
 
-        var goal = new Goal(request.UserId, request.Title);
-        var goalEntity = _mapper.Map<GoalEntity>(goal);
-
-        using (var transaction = await _goalRepository.BeginTransactionAsync().ConfigureAwait(false))
+        try
         {
-            try
-            {
-                await _goalRepository.AddAsync(goalEntity).ConfigureAwait(false);
-                userProfile.AddGoal(goal);
-                await _userProfileRepository.UpdateProfile(userProfile).ConfigureAwait(false);
-                await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
-                _logger.LogError(ex, "Ошибка при добавлении цели");
-                return Result<Goal>.Invalid("Ошибка при добавлении цели");
-            }
-        }
+            await _unitOfWork.BeginTransactionAsync();
 
-        return Result<Goal>.Success(goal);
+            var goal = new Goal(request.UserId, request.Title);
+
+            await _goalRepository.AddAsync(goal);
+            userProfile.AddGoal(goal);
+
+            _userProfileRepository.UpdateProfile(userProfile);
+
+            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
+
+            return Result<Goal>.Success(goal);
+        }
+        catch (Exception)
+        {
+            await _unitOfWork.RollbackAsync();
+            return Result<Goal>.Invalid("Ошибка при добавлении цели");
+        }
     }
 }

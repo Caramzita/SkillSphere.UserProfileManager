@@ -2,12 +2,8 @@
 
 namespace SkillSphere.UserProfileManager.Core.Models;
 
-public class Skill
+public class Skill : BaseModel
 {
-    public Guid Id { get; init; }
-
-    public Guid UserId { get; init; }
-
     public string Name { get; set; } = string.Empty;
 
     public SkillLevel Level { get; set; }

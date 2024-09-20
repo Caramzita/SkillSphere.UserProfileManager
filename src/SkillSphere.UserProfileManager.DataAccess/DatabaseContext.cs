@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SkillSphere.UserProfileManager.Core.Models;
-using SkillSphere.UserProfileManager.DataAccess.Entities;
 using System.Reflection;
 
 namespace SkillSphere.UserProfileManager.DataAccess;
@@ -10,13 +9,13 @@ public class DatabaseContext : DbContext
 {
     private readonly ILogger<DatabaseContext> _logger;
 
-    public DbSet<UserProfileEntity> UserProfiles { get; set; }
+    public DbSet<UserProfile> UserProfiles { get; set; }
 
-    public DbSet<SkillEntity> Skills { get; set; }
+    public DbSet<Skill> Skills { get; set; }
 
-    public DbSet<GoalEntity> Goals { get; set; }
+    public DbSet<Goal> Goals { get; set; }
 
-    public DbSet<LearningHistoryEntity> LearningHistory { get; set; }
+    public DbSet<LearningHistory> LearningHistory { get; set; }
 
     public DatabaseContext(DbContextOptions<DatabaseContext> options, ILogger<DatabaseContext> logger)
         : base(options)

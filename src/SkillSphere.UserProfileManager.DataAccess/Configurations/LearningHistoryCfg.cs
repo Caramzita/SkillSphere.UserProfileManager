@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SkillSphere.UserProfileManager.DataAccess.Entities;
+using SkillSphere.UserProfileManager.Core.Models;
 
 namespace SkillSphere.UserProfileManager.DataAccess.Configurations;
 
-public class LearningHistoryCfg : IEntityTypeConfiguration<LearningHistoryEntity>
+public class LearningHistoryCfg : IEntityTypeConfiguration<LearningHistory>
 {
-    public void Configure(EntityTypeBuilder<LearningHistoryEntity> builder)
+    public void Configure(EntityTypeBuilder<LearningHistory> builder)
     {
         builder.HasKey(e => e.Id);
 

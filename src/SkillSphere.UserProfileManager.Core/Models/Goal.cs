@@ -2,12 +2,8 @@
 
 namespace SkillSphere.UserProfileManager.Core.Models;
 
-public class Goal
+public class Goal : BaseModel
 {
-    public Guid Id { get; init; }
-
-    public Guid UserId { get; init; }
-
     public string Title { get; set; } = string.Empty;
 
     public DateTime CreatedDate { get; init; }

@@ -2,7 +2,7 @@
 
 namespace SkillSphere.UserProfileManager.Core.Interfaces;
 
-public interface IRepository<T> where T : BaseEntity
+public interface IRepository<T> where T : BaseModel
 {
     Task<IEnumerable<T>> GetAllAsync(Guid userId);
 

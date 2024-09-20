@@ -8,15 +8,19 @@ namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.UpdatePr
 
 public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand, Result<UserProfile>>
 {
-    private readonly IUserProfileRepository _profileRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    private readonly IUserProfileRepository _userProfileRepository;
 
     private readonly IAuthorizationService _authorizationService;
 
-    public UpdateProfileCommandHandler(IUserProfileRepository profileRepository,
+    public UpdateProfileCommandHandler(IUnitOfWork unitOfWork,
+        IUserProfileRepository userProfileRepository,
         IAuthorizationService authorizationService)
     {
-        _profileRepository = profileRepository;
-        _authorizationService = authorizationService;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
+        _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
     }
 
     public async Task<Result<UserProfile>> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
@@ -28,7 +32,7 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
             return Result<UserProfile>.Invalid("Пользователь не найден");
         }
 
-        var existingProfile = await _profileRepository.GetProfileByUserId(request.UserId);
+        var existingProfile = await _userProfileRepository.GetProfileByUserId(request.UserId);
 
         if (existingProfile == null)
         {
@@ -37,9 +41,10 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
 
         existingProfile.Name = request.Name;
         existingProfile.Bio = request.Bio;
-        existingProfile.ProfilePictureUrl = request.ProfilePictureUrl;
+        existingProfile.ProfilePictureUrl = request.ProfilePictureUrl!;
 
-        await _profileRepository.UpdateProfile(existingProfile);
+        _userProfileRepository.UpdateProfile(existingProfile);
+        await _unitOfWork.CompleteAsync();
 
         return Result<UserProfile>.Success(existingProfile);
     }

@@ -7,16 +7,16 @@ namespace SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetAllSkills;
 
 public class GetAllSkillsQueryHandler : IRequestHandler<GetAllSkillsQuery, Result<IEnumerable<Skill>>>
 {
-    private readonly ISkillRepository _skillRepository;
+    private readonly IRepository<Skill> _skillRepository;
 
-    public GetAllSkillsQueryHandler(ISkillRepository skillRepository)
+    public GetAllSkillsQueryHandler(IRepository<Skill> skillRepository)
     {
         _skillRepository = skillRepository ?? throw new ArgumentNullException(nameof(skillRepository));
     }
 
     public async Task<Result<IEnumerable<Skill>>> Handle(GetAllSkillsQuery request, CancellationToken cancellationToken)
     {
-        var skills = await _skillRepository.GetAllSkills(request.UserId);
+        var skills = await _skillRepository.GetAllAsync(request.UserId);
 
         if (skills == null || !skills.Any())
         {

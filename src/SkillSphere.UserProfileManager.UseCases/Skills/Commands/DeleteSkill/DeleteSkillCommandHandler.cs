@@ -2,24 +2,29 @@
 using Microsoft.Extensions.Logging;
 using SkillSphere.Infrastructure.UseCases;
 using SkillSphere.UserProfileManager.Core.Interfaces;
+using SkillSphere.UserProfileManager.Core.Models;
 using SkillSphere.UserProfileManager.UseCases.Skills.Commands.AddSkill;
 
 namespace SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteSkill;
 
 public class DeleteSkillCommandHandler : IRequestHandler<DeleteSkillCommand, Result<Unit>>
 {
-    private readonly ISkillRepository _skillRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     private readonly IUserProfileRepository _userProfileRepository;
 
+    private readonly IRepository<Skill> _skillRepository;
+
     private readonly ILogger<AddSkillCommandHandler> _logger;
 
-    public DeleteSkillCommandHandler(ISkillRepository skillRepository,
-        IUserProfileRepository userProfileRepository,
+    public DeleteSkillCommandHandler(IUnitOfWork unitOfWork, 
+        IUserProfileRepository userProfileRepository, 
+        IRepository<Skill> skillRepository,
         ILogger<AddSkillCommandHandler> logger)
     {
-        _skillRepository = skillRepository ?? throw new ArgumentNullException(nameof(skillRepository));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
+        _skillRepository = skillRepository ?? throw new ArgumentNullException(nameof(skillRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -32,30 +37,31 @@ public class DeleteSkillCommandHandler : IRequestHandler<DeleteSkillCommand, Res
             return Result<Unit>.Invalid("Профиль пользователя не найден");
         }
 
-        var skill = await _skillRepository.GetSkillById(request.Id, request.UserId);
+        var skill = await _skillRepository.GetByIdAsync(request.Id, request.UserId);
 
         if (skill == null)
         {
-            return Result<Unit>.Invalid("Такой заметки не существует");
+            return Result<Unit>.Invalid("Такого навыка не существует");
         }
 
-        using (var transaction = await _skillRepository.BeginTransactionAsync())
+        try
         {
-            try
-            {
-                await _skillRepository.DeleteSkill(skill);
-                userProfile.DeleteSkill(skill);
-                await _userProfileRepository.UpdateProfile(userProfile);
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Ошибка при обновлении навыка");
-                return Result<Unit>.Invalid("Ошибка при обновлении навыка");
-            }
-        }
+            await _unitOfWork.BeginTransactionAsync();
 
-        return Result<Unit>.Empty();
+            _skillRepository.Delete(skill);
+            userProfile.DeleteSkill(skill);
+
+            _userProfileRepository.UpdateProfile(userProfile);
+
+            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
+
+            return Result<Unit>.Empty();
+        }
+        catch (Exception)
+        {
+            await _unitOfWork.RollbackAsync();
+            return Result<Unit>.Invalid("Ошибка при добавлении навыка");
+        };
     }
 }

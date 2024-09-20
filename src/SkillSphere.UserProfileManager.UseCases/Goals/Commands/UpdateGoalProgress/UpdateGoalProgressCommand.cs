@@ -6,11 +6,11 @@ namespace SkillSphere.UserProfileManager.UseCases.Goals.Commands.UpdateGoalProgr
 
 public class UpdateGoalProgressCommand : IRequest<Result<Unit>>
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; }
 
-    public Guid UserId {  get; set; }
+    public Guid UserId {  get; }
 
-    public GoalProgress Progress { get; set; }
+    public GoalProgress Progress { get; }
 
     public UpdateGoalProgressCommand(Guid id, Guid userId, GoalProgress progress)
     {

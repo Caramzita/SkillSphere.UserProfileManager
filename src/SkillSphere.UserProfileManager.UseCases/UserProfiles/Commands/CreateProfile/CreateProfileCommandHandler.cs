@@ -8,15 +8,18 @@ namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.CreatePr
 
 public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, Result<UserProfile>>
 {
-    private readonly IUserProfileRepository _profileRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    private readonly IUserProfileRepository _userProfileRepository;
 
     private readonly IAuthorizationService _authorizationService;
 
-    public CreateProfileCommandHandler(
-        IUserProfileRepository profileRepository,
+    public CreateProfileCommandHandler(IUserProfileRepository userProfileRepository,
+        IUnitOfWork unitOfWork,
         IAuthorizationService authorizationService)
     {
-        _profileRepository = profileRepository ?? throw new ArgumentNullException(nameof(profileRepository));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
         _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
     }
 
@@ -29,7 +32,7 @@ public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand,
             return Result<UserProfile>.Invalid("Пользователь не найден");
         }
 
-        var existingProfile = await _profileRepository.GetProfileByUserId(request.UserId);
+        var existingProfile = await _userProfileRepository.GetProfileByUserId(request.UserId);
 
         if (existingProfile != null)
         {
@@ -39,11 +42,12 @@ public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand,
         var newProfile = new UserProfile(
             request.UserId,
             request.Name,
-            request.ProfilePictureUrl,
+            request.ProfilePictureUrl!,
             request.Bio
         );
 
-        await _profileRepository.AddProfile(newProfile);
+        await _userProfileRepository.AddProfile(newProfile);
+        await _unitOfWork.CompleteAsync();
 
         return Result<UserProfile>.Success(newProfile);
     }

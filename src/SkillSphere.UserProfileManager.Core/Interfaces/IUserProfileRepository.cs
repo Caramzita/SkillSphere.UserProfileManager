@@ -10,7 +10,7 @@ public interface IUserProfileRepository
 
     Task AddProfile(UserProfile userProfile);
 
-    Task UpdateProfile(UserProfile profile);
+    void UpdateProfile(UserProfile profile);
 
-    Task DeleteProfile(UserProfile profile);
+    void DeleteProfile(UserProfile profile);
 }

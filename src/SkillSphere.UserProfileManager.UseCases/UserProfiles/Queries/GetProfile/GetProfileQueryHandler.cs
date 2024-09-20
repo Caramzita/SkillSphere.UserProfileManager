@@ -7,16 +7,16 @@ namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Queries.GetProfil
 
 public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, Result<UserProfile>>
 {
-    private readonly IUserProfileRepository _profileRepository;
+    private readonly IUserProfileRepository _userProfileRepository;
 
-    public GetProfileQueryHandler(IUserProfileRepository profileRepository)
+    public GetProfileQueryHandler(IUserProfileRepository userProfileRepository)
     {
-        _profileRepository = profileRepository;
+        _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
     }
 
     public async Task<Result<UserProfile>> Handle(GetProfileQuery request, CancellationToken cancellationToken)
     {
-        var profile = await _profileRepository.GetProfileByUserId(request.UserId);
+        var profile = await _userProfileRepository.GetProfileByUserId(request.UserId);
 
         if (profile == null)
         {

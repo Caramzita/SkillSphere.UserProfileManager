@@ -8,18 +8,22 @@ namespace SkillSphere.UserProfileManager.UseCases.Skills.Commands.AddSkill;
 
 public class AddSkillCommandHandler : IRequestHandler<AddSkillCommand, Result<Skill>>
 {
-    private readonly ISkillRepository _skillRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
     private readonly IUserProfileRepository _userProfileRepository;
 
+    private readonly IRepository<Skill> _skillRepository;
+
     private readonly ILogger<AddSkillCommandHandler> _logger;
 
-    public AddSkillCommandHandler(ISkillRepository skillRepository,
-        IUserProfileRepository userProfileRepository,
+    public AddSkillCommandHandler(IUnitOfWork unitOfWork, 
+        IUserProfileRepository userProfileRepository, 
+        IRepository<Skill> skillRepository,
         ILogger<AddSkillCommandHandler> logger)
     {
-        _skillRepository = skillRepository ?? throw new ArgumentNullException(nameof(skillRepository));
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
+        _skillRepository = skillRepository ?? throw new ArgumentNullException(nameof(skillRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -32,25 +36,26 @@ public class AddSkillCommandHandler : IRequestHandler<AddSkillCommand, Result<Sk
             return Result<Skill>.Invalid("Профиль пользователя не найден");
         }
 
-        var skill = new Skill(request.UserId, request.Name, request.Level);
-
-        using (var transaction = await _skillRepository.BeginTransactionAsync())
+        try
         {
-            try
-            {
-                await _skillRepository.AddSkill(skill);
-                userProfile.AddSkill(skill);
-                await _userProfileRepository.UpdateProfile(userProfile);
-                await transaction.CommitAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                _logger.LogError(ex, "Ошибка при добавлении навыка");
-                return Result<Skill>.Invalid("Ошибка при добавлении навыка");
-            }
-        }
+            await _unitOfWork.BeginTransactionAsync();
 
-        return Result<Skill>.Success(skill);
+            var skill = new Skill(request.UserId, request.Name, request.Level);
+
+            await _skillRepository.AddAsync(skill);
+            userProfile.AddSkill(skill);
+
+            _userProfileRepository.UpdateProfile(userProfile);
+
+            await _unitOfWork.CompleteAsync();
+            await _unitOfWork.CommitAsync();
+
+            return Result<Skill>.Success(skill);
+        }
+        catch (Exception)
+        {
+            await _unitOfWork.RollbackAsync();
+            return Result<Skill>.Invalid("Ошибка при добавлении цели");
+        }
     }
 }

@@ -4,7 +4,7 @@ using SkillSphere.UserProfileManager.Core.Models;
 
 namespace SkillSphere.UserProfileManager.DataAccess.Repositories;
 
-public class Repository<T> : IRepository<T> where T : BaseEntity
+public class Repository<T> : IRepository<T> where T : BaseModel
 {
     private readonly DatabaseContext _context;
 
@@ -36,13 +36,13 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         await _context.Set<T>().AddAsync(entity);
     }
 
-    public void Delete(T entity)
-    {
-        _context.Set<T>().Remove(entity);
-    }
-
     public void UpdateAsync(T entity)
     {
         _context.Set<T>().Update(entity);
     }
+
+    public void Delete(T entity)
+    {
+        _context.Set<T>().Remove(entity);
+    }    
 }

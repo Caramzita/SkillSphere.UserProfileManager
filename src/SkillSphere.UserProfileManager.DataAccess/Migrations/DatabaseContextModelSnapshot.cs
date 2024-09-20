@@ -22,7 +22,7 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.DataAccess.Entities.GoalEntity", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Goal", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UserProfileEntityId")
+                    b.Property<Guid?>("UserProfileId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -50,12 +50,12 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.HasIndex("Title")
                         .IsUnique();
 
-                    b.HasIndex("UserProfileEntityId");
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("Goals");
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.DataAccess.Entities.LearningHistoryEntity", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.LearningHistory", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -69,6 +69,9 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -77,7 +80,7 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UserProfileEntityId")
+                    b.Property<Guid?>("UserProfileId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -85,12 +88,12 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.HasIndex("CourseTitle")
                         .IsUnique();
 
-                    b.HasIndex("UserProfileEntityId");
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("LearningHistory");
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.DataAccess.Entities.SkillEntity", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,7 +110,7 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UserProfileEntityId")
+                    b.Property<Guid?>("UserProfileId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
@@ -117,12 +120,12 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.HasIndex("UserProfileEntityId");
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("Skills");
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.DataAccess.Entities.UserProfileEntity", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.UserProfile", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -154,31 +157,31 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.ToTable("UserProfiles");
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.DataAccess.Entities.GoalEntity", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Goal", b =>
                 {
-                    b.HasOne("SkillSphere.UserProfileManager.DataAccess.Entities.UserProfileEntity", null)
+                    b.HasOne("SkillSphere.UserProfileManager.Core.Models.UserProfile", null)
                         .WithMany("Goals")
-                        .HasForeignKey("UserProfileEntityId")
+                        .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.DataAccess.Entities.LearningHistoryEntity", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.LearningHistory", b =>
                 {
-                    b.HasOne("SkillSphere.UserProfileManager.DataAccess.Entities.UserProfileEntity", null)
+                    b.HasOne("SkillSphere.UserProfileManager.Core.Models.UserProfile", null)
                         .WithMany("LearningHistories")
-                        .HasForeignKey("UserProfileEntityId")
+                        .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.DataAccess.Entities.SkillEntity", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill", b =>
                 {
-                    b.HasOne("SkillSphere.UserProfileManager.DataAccess.Entities.UserProfileEntity", null)
+                    b.HasOne("SkillSphere.UserProfileManager.Core.Models.UserProfile", null)
                         .WithMany("Skills")
-                        .HasForeignKey("UserProfileEntityId")
+                        .HasForeignKey("UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.DataAccess.Entities.UserProfileEntity", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.UserProfile", b =>
                 {
                     b.Navigation("Goals");
 

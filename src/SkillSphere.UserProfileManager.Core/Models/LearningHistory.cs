@@ -1,25 +1,22 @@
 ﻿namespace SkillSphere.UserProfileManager.Core.Models;
 
-public class LearningHistory
+public class LearningHistory : BaseModel
 {
-    public Guid Id { get; init; }
-
-    public Guid UserId { get; init; }
-
-    public string CourseTitle { get; set; } = string.Empty;
+    public string CourseTitle { get; private set; } = string.Empty;
 
     public DateTime CompletedDate { get; private set; }
 
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; private set; } = string.Empty;
 
     public DateTime CreatedAt { get; init; }
 
-    public LearningHistory(Guid userId, string courseTitle, string description)
+    public LearningHistory(Guid userId, string courseTitle, string description, DateTime completedDate)
     {
         Id = Guid.NewGuid();
         UserId = userId;
         CourseTitle = courseTitle;
         Description = description;
+        CompletedDate = completedDate;
         CreatedAt = DateTime.UtcNow;
     }
 
@@ -37,10 +34,5 @@ public class LearningHistory
     public void CompleteCourse()
     {
         CompletedDate = DateTime.UtcNow;
-    }
-
-    public bool CanEditOrDelete()
-    {
-        return CreatedAt.AddHours(24) > DateTime.UtcNow;
     }
 }

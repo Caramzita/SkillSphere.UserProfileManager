@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using SkillSphere.UserProfileManager.DataAccess.Entities;
+using SkillSphere.UserProfileManager.Core.Models;
 
 namespace SkillSphere.UserProfileManager.DataAccess.Configurations;
 
-public class UserProfileCfg : IEntityTypeConfiguration<UserProfileEntity>
+public class UserProfileCfg : IEntityTypeConfiguration<UserProfile>
 {
-    public void Configure(EntityTypeBuilder<UserProfileEntity> builder)
+    public void Configure(EntityTypeBuilder<UserProfile> builder)
     {
         builder.HasKey(e => e.Id);
 

@@ -1,11 +1,7 @@
 ﻿namespace SkillSphere.UserProfileManager.Core.Models;
 
-public class UserProfile
+public class UserProfile : BaseModel
 {
-    public Guid Id { get; init; }
-
-    public Guid UserId { get; init; }
-
     public string Name { get; set; } = string.Empty;
 
     public string ProfilePictureUrl { get; set; } = string.Empty;
@@ -64,5 +60,10 @@ public class UserProfile
     public void AddLearningHistory(LearningHistory history)
     {
         LearningHistories.Add(history);
+    }
+
+    public void DeleteLearningHistory(LearningHistory history)
+    {
+        LearningHistories.Remove(LearningHistories.FirstOrDefault(x => x.Id == history.Id)!);
     }
 }

@@ -10,68 +10,67 @@ using SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteSkill;
 using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetAllSkills;
 using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetSkill;
 
-namespace SkillSphere.UserProfileManager.API.Controllers
+namespace SkillSphere.UserProfileManager.API.Controllers;
+
+[Route("api/profiles/skills")]
+[ApiController]
+[Authorize]
+public class SkillController : ControllerBase
 {
-    [Route("api/profiles/skills")]
-    [ApiController]
-    [Authorize]
-    public class SkillController : ControllerBase
+    private readonly IMapper _mapper;
+
+    private readonly IMediator _mediator;
+
+    private readonly IUserAccessor _userAccessor;
+
+    public SkillController(IMapper mapper, IMediator mediator, IUserAccessor userAccessor)
     {
-        private readonly IMapper _mapper;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+        _userAccessor = userAccessor ?? throw new ArgumentNullException(nameof(userAccessor));
+    }
 
-        private readonly IMediator _mediator;
+    [HttpGet]
+    public async Task<IActionResult> GetAllSkills()
+    {
+        var userId = _userAccessor.GetUserId();
+        var command = new GetAllSkillsQuery(userId);
 
-        private readonly IUserAccessor _userAccessor;
+        var result = await _mediator.Send(command);
 
-        public SkillController(IMapper mapper, IMediator mediator, IUserAccessor userAccessor)
-        {
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            _userAccessor = userAccessor ?? throw new ArgumentNullException(nameof(userAccessor));
-        }
+        return result.ToActionResult();
+    }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllSkills()
-        {
-            var userId = _userAccessor.GetUserId();
-            var command = new GetAllSkillsQuery(userId);
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetSkill(Guid id)
+    {
+        var userId = _userAccessor.GetUserId();
+        var command = new GetSkillQuery(id, userId);
 
-            var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-            return result.ToActionResult();
-        }
+        return result.ToActionResult();
+    }
 
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetSkill(Guid id)
-        {
-            var userId = _userAccessor.GetUserId();
-            var command = new GetSkillQuery(id, userId);
+    [HttpPost]
+    public async Task<IActionResult> AddSkill([FromBody] SkillDto skill)
+    {
+        var command = _mapper.Map<AddSkillCommand>(skill);
+        command.UserId = _userAccessor.GetUserId();
 
-            var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-            return result.ToActionResult();
-        }
+        return result.ToActionResult();
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> AddSkill([FromBody] SkillDto skill)
-        {
-            var command = _mapper.Map<AddSkillCommand>(skill);
-            command.UserId = _userAccessor.GetUserId();
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteSkill(Guid id)
+    {
+        var userId = _userAccessor.GetUserId();
+        var command = new DeleteSkillCommand(id, userId);
 
-            var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-            return result.ToActionResult();
-        }
-
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteSkill(Guid id)
-        {
-            var userId = _userAccessor.GetUserId();
-            var command = new DeleteSkillCommand(id, userId);
-
-            var result = await _mediator.Send(command);
-
-            return result.ToActionResult();
-        }
+        return result.ToActionResult();
     }
 }

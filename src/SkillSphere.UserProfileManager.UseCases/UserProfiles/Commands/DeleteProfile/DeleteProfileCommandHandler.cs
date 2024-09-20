@@ -6,23 +6,27 @@ namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.DeletePr
 
 public class DeleteProfileCommandHandler : IRequestHandler<DeleteProfileCommand, Result<Unit>>
 {
-    private readonly IUserProfileRepository _profileRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public DeleteProfileCommandHandler(IUserProfileRepository profileRepository)
+    private readonly IUserProfileRepository _userProfileRepository;
+
+    public DeleteProfileCommandHandler(IUnitOfWork unitOfWork, IUserProfileRepository userProfileRepository)
     {
-        _profileRepository = profileRepository;
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
     }
 
     public async Task<Result<Unit>> Handle(DeleteProfileCommand request, CancellationToken cancellationToken)
     {
-        var existingProfile = await _profileRepository.GetProfileByUserId(request.UserId);
+        var existingProfile = await _userProfileRepository.GetProfileByUserId(request.UserId);
 
         if (existingProfile == null)
         {
             return Result<Unit>.Invalid("Профиль не существует");
         }
 
-        await _profileRepository.DeleteProfile(existingProfile);
+        _userProfileRepository.DeleteProfile(existingProfile);
+        await _unitOfWork.CompleteAsync();
 
         return Result<Unit>.Empty();
     }
