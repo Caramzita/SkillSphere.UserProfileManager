@@ -20,6 +20,8 @@ public class GoalCfg : IEntityTypeConfiguration<Goal>
         builder.HasIndex(e => e.Title)
             .IsUnique();
 
-        builder.Property(x => x.Progress).IsRequired();
+        builder.Property(p => p.Progress)
+            .IsRequired()
+            .HasConversion<string>();
     }
 }

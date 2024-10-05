@@ -1,4 +1,6 @@
-﻿namespace SkillSphere.UserProfileManager.Core.Models;
+﻿using SkillSphere.UserProfileManager.Core.Models.Skill;
+
+namespace SkillSphere.UserProfileManager.Core.Models;
 
 public class UserProfile : BaseModel
 {
@@ -8,7 +10,7 @@ public class UserProfile : BaseModel
 
     public string Bio { get; set; } = string.Empty;
 
-    public List<Skill> Skills { get; private set; } = new List<Skill>();
+    public List<UserSkill> Skills { get; private set; } = new List<UserSkill>();
 
     public List<Goal> Goals { get; private set; } = new List<Goal>();
 
@@ -25,7 +27,7 @@ public class UserProfile : BaseModel
     }
 
     public UserProfile(Guid id, Guid userId, string name, string profilePictureUrl, string bio,
-        List<Skill> skills, List<Goal> goals, List<LearningHistory> learningHistories)
+        List<UserSkill> skills, List<Goal> goals, List<LearningHistory> learningHistories)
     {
         Id = id;
         UserId = userId;
@@ -37,14 +39,14 @@ public class UserProfile : BaseModel
         LearningHistories = learningHistories;
     }
 
-    public void AddSkill(Skill skill)
+    public void AddSkill(UserSkill skill)
     {
         Skills.Add(skill);
     }
 
-    public void DeleteSkill(Skill skill)
+    public void DeleteSkill(UserSkill skill)
     {
-        Skills.Remove(Skills.FirstOrDefault(x => x.Id == skill.Id)!);
+        Skills.Remove(Skills.FirstOrDefault(x => x.SkillId == skill.SkillId)!);
     }
 
     public void AddGoal(Goal goal)

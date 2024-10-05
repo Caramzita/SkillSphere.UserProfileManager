@@ -1,21 +1,18 @@
 ﻿using MediatR;
 using SkillSphere.Infrastructure.UseCases;
-using SkillSphere.UserProfileManager.Core.Enums;
-using SkillSphere.UserProfileManager.Core.Models;
+using SkillSphere.UserProfileManager.Core.Models.Skill;
 
 namespace SkillSphere.UserProfileManager.UseCases.Skills.Commands.AddSkill;
 
 public class AddSkillCommand : IRequest<Result<Skill>>
 {
-    public Guid UserId { get; set; }
-
     public string Name { get; }
 
-    public SkillLevel Level { get; }
+    public Guid CategoryId { get; }
 
-    public AddSkillCommand(string name, SkillLevel level)
+    public AddSkillCommand(string name, Guid categoryId)
     {
         Name = name;
-        Level = level;
+        CategoryId = categoryId;
     }
 }

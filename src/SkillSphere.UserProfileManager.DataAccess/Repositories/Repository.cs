@@ -13,20 +13,18 @@ public class Repository<T> : IRepository<T> where T : BaseModel
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync(Guid userId)
+    public async Task<IEnumerable<T>> GetAllAsync()
     {
         return await _context.Set<T>()
             .AsNoTracking()
-            .Where(x => x.UserId == userId)
             .ToListAsync()
             .ConfigureAwait(false);
     }
 
-    public async Task<T?> GetByIdAsync(Guid id, Guid userId)
+    public async Task<T?> GetByIdAsync(Guid id)
     {
         return await _context.Set<T>()
             .AsNoTracking()
-            .Where(x => x.UserId == userId)
             .FirstOrDefaultAsync(x => x.Id == id)
             .ConfigureAwait(false);
     }

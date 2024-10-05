@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using SkillSphere.Infrastructure.UseCases;
 using SkillSphere.UserProfileManager.Core.Interfaces;
-using SkillSphere.UserProfileManager.Core.Models;
 using SkillSphere.UserProfileManager.UseCases.Skills.Commands.AddSkill;
 
 namespace SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteSkill;
@@ -11,33 +10,22 @@ public class DeleteSkillCommandHandler : IRequestHandler<DeleteSkillCommand, Res
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    private readonly IUserProfileRepository _userProfileRepository;
-
-    private readonly IRepository<Skill> _skillRepository;
+    private readonly ISkillRepository _skillRepository;
 
     private readonly ILogger<AddSkillCommandHandler> _logger;
 
     public DeleteSkillCommandHandler(IUnitOfWork unitOfWork, 
-        IUserProfileRepository userProfileRepository, 
-        IRepository<Skill> skillRepository,
+        ISkillRepository skillRepository,
         ILogger<AddSkillCommandHandler> logger)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
-        _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
         _skillRepository = skillRepository ?? throw new ArgumentNullException(nameof(skillRepository));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<Result<Unit>> Handle(DeleteSkillCommand request, CancellationToken cancellationToken)
     {
-        var userProfile = await _userProfileRepository.GetProfileByUserId(request.UserId);
-
-        if (userProfile == null)
-        {
-            return Result<Unit>.Invalid("Профиль пользователя не найден");
-        }
-
-        var skill = await _skillRepository.GetByIdAsync(request.Id, request.UserId);
+        var skill = await _skillRepository.GetSkillById(request.Id);
 
         if (skill == null)
         {
@@ -46,22 +34,15 @@ public class DeleteSkillCommandHandler : IRequestHandler<DeleteSkillCommand, Res
 
         try
         {
-            await _unitOfWork.BeginTransactionAsync();
-
-            _skillRepository.Delete(skill);
-            userProfile.DeleteSkill(skill);
-
-            _userProfileRepository.UpdateProfile(userProfile);
-
+            _skillRepository.DeleteSkill(skill);
             await _unitOfWork.CompleteAsync();
-            await _unitOfWork.CommitAsync();
 
-            return Result<Unit>.Empty();
+            return Result<Unit>.Success(Unit.Value);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            await _unitOfWork.RollbackAsync();
-            return Result<Unit>.Invalid("Ошибка при добавлении навыка");
+            _logger.LogError(ex, "Error occurred while adding skill.");
+            return Result<Unit>.Invalid("An error occurred while deleting the skill.");
         };
     }
 }

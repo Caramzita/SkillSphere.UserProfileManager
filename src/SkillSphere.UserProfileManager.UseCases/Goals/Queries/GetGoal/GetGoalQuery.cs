@@ -1,18 +1,30 @@
 ﻿using MediatR;
 using SkillSphere.Infrastructure.UseCases;
+using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.Core.Models;
 
 namespace SkillSphere.UserProfileManager.UseCases.Goals.Queries.GetGoal;
 
-public class GetGoalQuery : IRequest<Result<Goal>>
+public record GetGoalQuery(Guid Id) : IRequest<Result<Goal>>;
+
+public class GetGoalQueryHandler : IRequestHandler<GetGoalQuery, Result<Goal>>
 {
-    public Guid Id { get; }
+    private readonly IRepository<Goal> _goalRepository;
 
-    public Guid UserId { get; }
-
-    public GetGoalQuery(Guid id, Guid userId)
+    public GetGoalQueryHandler(IRepository<Goal> goalRepository)
     {
-        Id = id;
-        UserId = userId;
+        _goalRepository = goalRepository ?? throw new ArgumentNullException(nameof(goalRepository));
+    }
+
+    public async Task<Result<Goal>> Handle(GetGoalQuery request, CancellationToken cancellationToken)
+    {
+        var goal = await _goalRepository.GetByIdAsync(request.Id);
+
+        if (goal == null)
+        {
+            return Result<Goal>.Invalid("Цель не найдена.");
+        }
+
+        return Result<Goal>.Success(goal);
     }
 }

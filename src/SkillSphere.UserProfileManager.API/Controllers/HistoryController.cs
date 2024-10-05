@@ -8,7 +8,6 @@ using SkillSphere.UserProfileManager.Contracts.DTOs;
 using SkillSphere.UserProfileManager.UseCases.LearningHistories.Commands.AddHistory;
 using SkillSphere.UserProfileManager.UseCases.LearningHistories.Commands.DeleteHistory;
 using SkillSphere.UserProfileManager.UseCases.LearningHistories.Commands.UpdateHistoryDate;
-using SkillSphere.UserProfileManager.UseCases.LearningHistories.Queries.GetAllHistory;
 using SkillSphere.UserProfileManager.UseCases.LearningHistories.Queries.GetHistory;
 
 namespace SkillSphere.UserProfileManager.API.Controllers;
@@ -31,27 +30,28 @@ public class HistoryController : ControllerBase
         _userAccessor = userAccessor ?? throw new ArgumentNullException(nameof(userAccessor));
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllHistories()
-    {
-        var userId = _userAccessor.GetUserId();
-        var command = new GetAllHistoryQuery(userId);
+    //[HttpGet]
+    //public async Task<IActionResult> GetAllHistories()
+    //{
+    //    var userId = _userAccessor.GetUserId();
+    //    var command = new GetAllHistoryQuery(userId);
 
-        var result = await _mediator.Send(command);
+    //    var result = await _mediator.Send(command);
 
-        return result.ToActionResult();
-    }
+    //    return result.ToActionResult();
+    //}
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetHistory(Guid id)
-    {
-        var userId = _userAccessor.GetUserId();
-        var command = new GetHistoryQuery(id, userId);
+    //[HttpGet("{id:guid}")]
+    //[AllowAnonymous]
+    //public async Task<IActionResult> GetHistory(Guid id)
+    //{
+    //    var userId = _userAccessor.GetUserId();
+    //    var command = new GetHistoryQuery(id, userId);
 
-        var result = await _mediator.Send(command);
+    //    var result = await _mediator.Send(command);
 
-        return result.ToActionResult();
-    }
+    //    return result.ToActionResult();
+    //}
 
     [HttpPost]
     public async Task<IActionResult> AddHistory([FromBody] LearningHistoryDto goal)

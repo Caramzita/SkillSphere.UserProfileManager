@@ -16,7 +16,7 @@ public class GetHistoryQueryHandler : IRequestHandler<GetHistoryQuery, Result<Le
 
     public async Task<Result<LearningHistory>> Handle(GetHistoryQuery request, CancellationToken cancellationToken)
     {
-        var history = await _historyRepository.GetByIdAsync(request.Id, request.UserId);
+        var history = await _historyRepository.GetByIdAsync(request.Id);
 
         if (history == null)
         {

@@ -18,4 +18,9 @@
     <ProjectReference Include="..\SkillSphere.UserProfileManager.DataAccess\SkillSphere.UserProfileManager.DataAccess.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UserSkills\Commands\" />
+    <Folder Include="UserSkills\Queries\" />
+  </ItemGroup>
+
 </Project>

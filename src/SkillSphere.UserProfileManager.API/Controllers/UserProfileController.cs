@@ -33,13 +33,16 @@ public class UserProfileController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public IAsyncEnumerable<UserProfile> GetAllProfiles()
     {
-        var command = new GetAllProfilesQuery();
-        return _mediator.CreateStream(command);
+        var query = new GetAllProfilesQuery();
+
+        return _mediator.CreateStream(query);
     }
 
     [HttpGet("{userId:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetProfileByUserId(Guid userId)
     {
         var command = new GetProfileQuery(userId);

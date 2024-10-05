@@ -8,7 +8,6 @@ using SkillSphere.UserProfileManager.Contracts.DTOs;
 using SkillSphere.UserProfileManager.UseCases.Goals.Commands.AddGoal;
 using SkillSphere.UserProfileManager.UseCases.Goals.Commands.DeleteGoal;
 using SkillSphere.UserProfileManager.UseCases.Goals.Commands.UpdateGoalProgress;
-using SkillSphere.UserProfileManager.UseCases.Goals.Queries.GetAllGoals;
 using SkillSphere.UserProfileManager.UseCases.Goals.Queries.GetGoal;
 
 namespace SkillSphere.UserProfileManager.API.Controllers;
@@ -31,27 +30,27 @@ public class GoalController : ControllerBase
         _userAccessor = userAccessor ?? throw new ArgumentNullException(nameof(userAccessor));
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllGoals()
-    {
-        var userId = _userAccessor.GetUserId();
-        var command = new GetAllGoalsQuery(userId);
+    //[HttpGet]
+    //public async Task<IActionResult> GetAllGoals()
+    //{
+    //    var userId = _userAccessor.GetUserId();
+    //    var command = new GetAllGoalsQuery(userId);
 
-        var result = await _mediator.Send(command);
+    //    var result = await _mediator.Send(command);
 
-        return result.ToActionResult();
-    }
+    //    return result.ToActionResult();
+    //}
 
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetGoal(Guid id)
-    {
-        var userId = _userAccessor.GetUserId();
-        var command = new GetGoalQuery(id, userId);
+    //[HttpGet("{id:guid}")]
+    //[AllowAnonymous]
+    //public async Task<IActionResult> GetGoal(Guid id)
+    //{
+    //    var command = new GetGoalQuery(id);
 
-        var result = await _mediator.Send(command);
+    //    var result = await _mediator.Send(command);
 
-        return result.ToActionResult();
-    }
+    //    return result.ToActionResult();
+    //}
 
     [HttpPost]
     public async Task<IActionResult> AddGoal([FromBody] GoalDto goal)

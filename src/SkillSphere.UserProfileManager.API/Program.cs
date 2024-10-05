@@ -15,7 +15,7 @@ using SkillSphere.UserProfileManager.Core.Interfaces;
 
 namespace SkillSphere.UserProfileManager.API;
 
-public class Program
+internal class Program
 {
     private static async Task Main(string[] args)
     {
@@ -93,6 +93,8 @@ public class Program
         services.AddScoped<IUserAccessor, UserAccessor>();
 
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
+        services.AddScoped<ISkillRepository, SkillRepository>();
+        services.AddScoped<IUserSkillRepository, UserSkillRepository>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

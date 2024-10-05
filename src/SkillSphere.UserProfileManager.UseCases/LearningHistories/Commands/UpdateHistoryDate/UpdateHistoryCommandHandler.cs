@@ -36,7 +36,7 @@ public class UpdateHistoryCommandHandler : IRequestHandler<UpdateHistoryCommand,
             return Result<Unit>.Invalid("Профиль пользователя не найден");
         }
 
-        var history = await _historyRepository.GetByIdAsync(request.Id, request.UserId);
+        var history = await _historyRepository.GetByIdAsync(request.Id);
 
         if (history == null)
         {

@@ -36,7 +36,7 @@ public class UpdateGoalProgressCommandHandler : IRequestHandler<UpdateGoalProgre
             return Result<Unit>.Invalid("Профиль пользователя не найден");
         }
 
-        var goal = await _goalRepository.GetByIdAsync(request.Id, request.UserId);
+        var goal = await _goalRepository.GetByIdAsync(request.Id);
 
         if (goal == null)
         {

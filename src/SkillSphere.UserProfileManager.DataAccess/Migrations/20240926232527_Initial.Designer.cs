@@ -12,7 +12,7 @@ using SkillSphere.UserProfileManager.DataAccess;
 namespace SkillSphere.UserProfileManager.DataAccess.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240920184838_Initial")]
+    [Migration("20240926232527_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -34,8 +34,9 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Progress")
-                        .HasColumnType("integer");
+                    b.Property<string>("Progress")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -102,8 +103,9 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("integer");
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()

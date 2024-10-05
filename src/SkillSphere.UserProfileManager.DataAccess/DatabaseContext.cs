@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SkillSphere.UserProfileManager.Core.Models;
+using SkillSphere.UserProfileManager.Core.Models.Skill;
 using System.Reflection;
 
 namespace SkillSphere.UserProfileManager.DataAccess;
@@ -12,6 +13,10 @@ public class DatabaseContext : DbContext
     public DbSet<UserProfile> UserProfiles { get; set; }
 
     public DbSet<Skill> Skills { get; set; }
+
+    public DbSet<SkillCategory> SkillCategories { get; set; }
+
+    public DbSet<UserSkill> UserSkills { get; set; }
 
     public DbSet<Goal> Goals { get; set; }
 
