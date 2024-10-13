@@ -43,15 +43,12 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UserProfileId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Title")
                         .IsUnique();
 
-                    b.HasIndex("UserProfileId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Goals");
                 });
@@ -81,50 +78,75 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("UserProfileId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CourseTitle")
                         .IsUnique();
 
-                    b.HasIndex("UserProfileId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("LearningHistory");
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill.Skill", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Level")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("UserProfileId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasAlternateKey("Name");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.HasIndex("UserProfileId");
-
                     b.ToTable("Skills");
+                });
+
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill.SkillCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SkillCategories");
+                });
+
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill.UserSkill", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SkillId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("UserId", "SkillId");
+
+                    b.HasIndex("SkillId");
+
+                    b.ToTable("UserSkills");
                 });
 
             modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.UserProfile", b =>
@@ -163,24 +185,49 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                 {
                     b.HasOne("SkillSphere.UserProfileManager.Core.Models.UserProfile", null)
                         .WithMany("Goals")
-                        .HasForeignKey("UserProfileId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId")
+                        .HasPrincipalKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.LearningHistory", b =>
                 {
                     b.HasOne("SkillSphere.UserProfileManager.Core.Models.UserProfile", null)
                         .WithMany("LearningHistories")
-                        .HasForeignKey("UserProfileId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId")
+                        .HasPrincipalKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill", b =>
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill.Skill", b =>
                 {
+                    b.HasOne("SkillSphere.UserProfileManager.Core.Models.Skill.SkillCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill.UserSkill", b =>
+                {
+                    b.HasOne("SkillSphere.UserProfileManager.Core.Models.Skill.Skill", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SkillSphere.UserProfileManager.Core.Models.UserProfile", null)
                         .WithMany("Skills")
-                        .HasForeignKey("UserProfileId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId")
+                        .HasPrincipalKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Skill");
                 });
 
             modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.UserProfile", b =>

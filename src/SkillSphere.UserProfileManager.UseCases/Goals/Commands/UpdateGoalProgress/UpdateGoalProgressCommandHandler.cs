@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Logging;
 using SkillSphere.Infrastructure.UseCases;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.Core.Models;
@@ -14,17 +13,13 @@ public class UpdateGoalProgressCommandHandler : IRequestHandler<UpdateGoalProgre
 
     private readonly IRepository<Goal> _goalRepository;
 
-    private readonly ILogger<UpdateGoalProgressCommandHandler> _logger;
-
     public UpdateGoalProgressCommandHandler(IUnitOfWork unitOfWork, 
         IUserProfileRepository userProfileRepository, 
-        IRepository<Goal> goalRepository,
-        ILogger<UpdateGoalProgressCommandHandler> logger)
+        IRepository<Goal> goalRepository)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
         _goalRepository = goalRepository ?? throw new ArgumentNullException(nameof(goalRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<Result<Unit>> Handle(UpdateGoalProgressCommand request, CancellationToken cancellationToken)

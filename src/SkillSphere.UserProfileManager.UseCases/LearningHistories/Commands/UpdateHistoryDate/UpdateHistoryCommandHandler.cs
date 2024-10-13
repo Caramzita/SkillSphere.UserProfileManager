@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.Extensions.Logging;
 using SkillSphere.Infrastructure.UseCases;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.Core.Models;
@@ -14,17 +13,13 @@ public class UpdateHistoryCommandHandler : IRequestHandler<UpdateHistoryCommand,
 
     private readonly IRepository<LearningHistory> _historyRepository;
 
-    private readonly ILogger<UpdateHistoryCommandHandler> _logger;
-
     public UpdateHistoryCommandHandler(IUnitOfWork unitOfWork,
         IUserProfileRepository userProfileRepository,
-        IRepository<LearningHistory> historyRepository,
-        ILogger<UpdateHistoryCommandHandler> logger)
+        IRepository<LearningHistory> historyRepository)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
         _historyRepository = historyRepository ?? throw new ArgumentNullException(nameof(historyRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<Result<Unit>> Handle(UpdateHistoryCommand request, CancellationToken cancellationToken)

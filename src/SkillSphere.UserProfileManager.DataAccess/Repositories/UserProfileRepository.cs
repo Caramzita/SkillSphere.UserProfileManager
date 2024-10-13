@@ -16,12 +16,8 @@ public class UserProfileRepository : IUserProfileRepository
     public IAsyncEnumerable<UserProfile> GetAllProfiles()
     {
         return _context.UserProfiles
-        .Include(x => x.Goals)
-        .Include(x => x.Skills)
-        .Include(x => x.LearningHistories)
-        .AsNoTracking()
-        .AsSplitQuery()
-        .AsAsyncEnumerable();
+            .AsNoTracking()
+            .AsAsyncEnumerable();
     }
 
     public async Task<UserProfile?> GetProfileByUserId(Guid userId)
@@ -30,6 +26,8 @@ public class UserProfileRepository : IUserProfileRepository
             .AsNoTracking()
             .Include(x => x.Goals)
             .Include(x => x.Skills)
+                .ThenInclude(us => us.Skill)
+                .ThenInclude(s => s.Category)
             .Include(x => x.LearningHistories)
             .AsSplitQuery()
             .FirstOrDefaultAsync(x => x.UserId == userId)
@@ -48,6 +46,6 @@ public class UserProfileRepository : IUserProfileRepository
 
     public void UpdateProfile(UserProfile profile)
     {
-        _context.Update(profile);
+        _context.Attach(profile);
     }
 }

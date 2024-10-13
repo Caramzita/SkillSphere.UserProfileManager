@@ -1,6 +1,4 @@
-﻿using SkillSphere.UserProfileManager.Core.Models;
-
-namespace SkillSphere.UserProfileManager.Core.Interfaces;
+﻿namespace SkillSphere.UserProfileManager.Core.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {

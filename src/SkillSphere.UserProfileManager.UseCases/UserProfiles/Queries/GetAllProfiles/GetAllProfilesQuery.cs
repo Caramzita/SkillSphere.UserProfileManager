@@ -1,27 +1,31 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
+using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
 using SkillSphere.UserProfileManager.Core.Interfaces;
-using SkillSphere.UserProfileManager.Core.Models;
 using System.Runtime.CompilerServices;
 
 namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Queries.GetAllProfiles;
 
-public record GetAllProfilesQuery : IStreamRequest<UserProfile>;
+public record GetAllProfilesQuery : IStreamRequest<UserProfileSummaryDto>;
 
-public class GetAllProfilesQueryHandler : IStreamRequestHandler<GetAllProfilesQuery, UserProfile>
+public class GetAllProfilesQueryHandler : IStreamRequestHandler<GetAllProfilesQuery, UserProfileSummaryDto>
 {
     private readonly IUserProfileRepository _userProfileRepository;
 
-    public GetAllProfilesQueryHandler(IUserProfileRepository userProfileRepository)
+    private readonly IMapper _mapper;
+
+    public GetAllProfilesQueryHandler(IUserProfileRepository userProfileRepository, IMapper mapper)
     {
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async IAsyncEnumerable<UserProfile> Handle(GetAllProfilesQuery request, 
+    public async IAsyncEnumerable<UserProfileSummaryDto> Handle(GetAllProfilesQuery request, 
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         await foreach (var profile in _userProfileRepository.GetAllProfiles())
         {
-            yield return profile;
+            yield return _mapper.Map<UserProfileSummaryDto>(profile);
         }
     }
 }

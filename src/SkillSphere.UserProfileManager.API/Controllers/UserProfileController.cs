@@ -3,18 +3,20 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.CreateProfile;
 using SkillSphere.Infrastructure.UseCases;
-using SkillSphere.UserProfileManager.Contracts.DTOs;
 using SkillSphere.Infrastructure.Security.UserAccessor;
 using Microsoft.AspNetCore.Authorization;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Queries.GetProfile;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Queries.GetAllProfiles;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.DeleteProfile;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.UpdateProfile;
-using SkillSphere.UserProfileManager.Core.Models;
+using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
 
 namespace SkillSphere.UserProfileManager.API.Controllers;
 
-[Route("api/profiles")]
+/// <summary>
+/// Предоставляет Rest API для работы с профилем пользователя.
+/// </summary>
+[Route("api/users")]
 [ApiController]
 [Authorize]
 public class UserProfileController : ControllerBase
@@ -25,6 +27,13 @@ public class UserProfileController : ControllerBase
 
     private readonly IUserAccessor _userAccessor;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="UserProfileController"/>.
+    /// </summary>
+    /// <param name="mediator"> Интерфейс для отправки команд и запросов через Mediator. </param>
+    /// <param name="mapper"> Интерфейс для маппинга данных между моделями. </param>
+    /// <param name="userAccessor"> Интерфейс для получения идентификатора пользователя из токена. </param>
+    /// <exception cref="ArgumentNullException"> Ошибка загрузки интерфейса. </exception>
     public UserProfileController(IMapper mapper, IMediator mediator, IUserAccessor userAccessor)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -32,17 +41,28 @@ public class UserProfileController : ControllerBase
         _userAccessor = userAccessor ?? throw new ArgumentNullException(nameof(userAccessor));
     }
 
-    [HttpGet]
+    /// <summary>
+    /// Получить все профиля.
+    /// </summary>
+    [HttpGet("profiles")]
     [AllowAnonymous]
-    public IAsyncEnumerable<UserProfile> GetAllProfiles()
+    [ProducesResponseType(typeof(UserProfileSummaryDto), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
+    public IAsyncEnumerable<UserProfileSummaryDto> GetAllProfiles()
     {
         var query = new GetAllProfilesQuery();
 
         return _mediator.CreateStream(query);
     }
 
-    [HttpGet("{userId:guid}")]
+    /// <summary>
+    /// Получить профиль по идентификатору пользователя.
+    /// </summary>
+    /// <param name="userId"> Идентификатор пользователя. </param>
+    [HttpGet("profile/{userId:guid}")]
     [AllowAnonymous]
+    [ProducesResponseType(typeof(UserProfileDetailDto), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> GetProfileByUserId(Guid userId)
     {
         var command = new GetProfileQuery(userId);
@@ -51,11 +71,17 @@ public class UserProfileController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateProfile([FromBody] UserProfileDto request)
+    /// <summary>
+    /// Создать профиль.
+    /// </summary>
+    /// <param name="request"> Модель данных профиля. </param>
+    [HttpPost("profile")]
+    [ProducesResponseType(typeof(UserProfileSummaryDto), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
+    public async Task<IActionResult> CreateProfile([FromBody] UserProfileRequestDto request)
     {
         var createCommand = _mapper.Map<CreateProfileCommand>(request);
-        createCommand.UserId = GetCurrentUserId();
+        createCommand.UserId = _userAccessor.GetUserId();
 
         if (!ModelState.IsValid)
         {
@@ -67,11 +93,17 @@ public class UserProfileController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPut]
-    public async Task<IActionResult> UpdateProfile([FromBody] UserProfileDto request)
+    /// <summary>
+    /// Обновить данные профиля.
+    /// </summary>
+    /// <param name="request"> Модель данных профиля. </param>
+    [HttpPatch("profile")]
+    [ProducesResponseType(typeof(UserProfileSummaryDto), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
+    public async Task<IActionResult> UpdateProfile([FromBody] UserProfileRequestDto request)
     {
         var updateCommand = _mapper.Map<UpdateProfileCommand>(request);
-        updateCommand.UserId = GetCurrentUserId();
+        updateCommand.UserId = _userAccessor.GetUserId();
 
         if (!ModelState.IsValid)
         {
@@ -83,19 +115,19 @@ public class UserProfileController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpDelete]
+    /// <summary>
+    /// Удалить профиль.
+    /// </summary>
+    [HttpDelete("profile")]
+    [ProducesResponseType(typeof(Unit), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> DeleteProfile()
     {
-        var userId = GetCurrentUserId();
+        var userId = _userAccessor.GetUserId();
         var command = new DeleteProfileCommand(userId);
 
         var result = await _mediator.Send(command);
 
         return result.ToActionResult();
-    }
-
-    private Guid GetCurrentUserId()
-    {
-        return _userAccessor.GetUserId();
     }
 }

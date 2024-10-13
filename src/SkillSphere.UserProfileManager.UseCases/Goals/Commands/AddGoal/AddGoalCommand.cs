@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SkillSphere.Infrastructure.UseCases;
-using SkillSphere.UserProfileManager.Core.Models;
+using SkillSphere.UserProfileManager.Contracts.DTOs.Goal;
 
 namespace SkillSphere.UserProfileManager.UseCases.Goals.Commands.AddGoal;
 
-public class AddGoalCommand : IRequest<Result<Goal>>
+public class AddGoalCommand : IRequest<Result<GoalResponseDto>>
 {
     public Guid UserId { get; set; }
 

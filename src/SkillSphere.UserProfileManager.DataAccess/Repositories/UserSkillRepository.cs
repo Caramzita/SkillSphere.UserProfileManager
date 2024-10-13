@@ -18,13 +18,15 @@ public class UserSkillRepository : IUserSkillRepository
         return _context.UserSkills
             .AsNoTracking()
             .Where(us => us.UserId == userId)
+            .AsSplitQuery()
             .AsAsyncEnumerable();
     }
 
-    public async Task<UserSkill?> GetUserSkillById(Guid skillId)
+    public async Task<UserSkill?> GetUserSkillById(Guid skillId, Guid userId)
     {
         return await _context.UserSkills
             .AsNoTracking()
+            .Where(ud => ud.UserId == userId)
             .FirstOrDefaultAsync(us => us.SkillId == skillId);
     }
 

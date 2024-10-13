@@ -4,15 +4,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SkillSphere.Infrastructure.Security.UserAccessor;
 using SkillSphere.Infrastructure.UseCases;
-using SkillSphere.UserProfileManager.Contracts.DTOs;
+using SkillSphere.UserProfileManager.Contracts.DTOs.LearningHistory;
 using SkillSphere.UserProfileManager.UseCases.LearningHistories.Commands.AddHistory;
 using SkillSphere.UserProfileManager.UseCases.LearningHistories.Commands.DeleteHistory;
 using SkillSphere.UserProfileManager.UseCases.LearningHistories.Commands.UpdateHistoryDate;
-using SkillSphere.UserProfileManager.UseCases.LearningHistories.Queries.GetHistory;
+using SkillSphere.UserProfileManager.UseCases.LearningHistories.Queries.GetAllHistory;
 
 namespace SkillSphere.UserProfileManager.API.Controllers;
 
-[Route("api/profiles/histories")]
+/// <summary>
+/// Предоставляет Rest API для работы с историей обучения.
+/// </summary>
+[Route("api/users/profile/histories")]
 [ApiController]
 [Authorize]
 public class HistoryController : ControllerBase
@@ -23,6 +26,13 @@ public class HistoryController : ControllerBase
 
     private readonly IUserAccessor _userAccessor;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="HistoryController"/>.
+    /// </summary>
+    /// <param name="mediator"> Интерфейс для отправки команд и запросов через Mediator. </param>
+    /// <param name="mapper"> Интерфейс для маппинга данных между моделями. </param>
+    /// <param name="userAccessor"> Интерфейс для получения идентификатора пользователя из токена. </param>
+    /// <exception cref="ArgumentNullException"> Ошибка загрузки интерфейса. </exception>
     public HistoryController(IMapper mapper, IMediator mediator, IUserAccessor userAccessor)
     {
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -30,31 +40,30 @@ public class HistoryController : ControllerBase
         _userAccessor = userAccessor ?? throw new ArgumentNullException(nameof(userAccessor));
     }
 
-    //[HttpGet]
-    //public async Task<IActionResult> GetAllHistories()
-    //{
-    //    var userId = _userAccessor.GetUserId();
-    //    var command = new GetAllHistoryQuery(userId);
+    /// <summary>
+    /// Получить историю обучения пользователя.
+    /// </summary>
+    [HttpGet]
+    [ProducesResponseType(typeof(LearningHistoryResponseDto), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
+    public async Task<IActionResult> GetAllUserHistories()
+    {
+        var userId = _userAccessor.GetUserId();
+        var command = new GetAllHistoryQuery(userId);
 
-    //    var result = await _mediator.Send(command);
+        var result = await _mediator.Send(command);
 
-    //    return result.ToActionResult();
-    //}
+        return result.ToActionResult();
+    }
 
-    //[HttpGet("{id:guid}")]
-    //[AllowAnonymous]
-    //public async Task<IActionResult> GetHistory(Guid id)
-    //{
-    //    var userId = _userAccessor.GetUserId();
-    //    var command = new GetHistoryQuery(id, userId);
-
-    //    var result = await _mediator.Send(command);
-
-    //    return result.ToActionResult();
-    //}
-
+    /// <summary>
+    /// Добавить историю обучения.
+    /// </summary>
+    /// <param name="goal"> Модель данных цели. </param>
     [HttpPost]
-    public async Task<IActionResult> AddHistory([FromBody] LearningHistoryDto goal)
+    [ProducesResponseType(typeof(LearningHistoryResponseDto), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
+    public async Task<IActionResult> AddHistory([FromBody] LearningHistoryRequestDto goal)
     {
         var command = _mapper.Map<AddHistoryCommand>(goal);
         command.UserId = _userAccessor.GetUserId();
@@ -64,7 +73,13 @@ public class HistoryController : ControllerBase
         return result.ToActionResult();
     }
 
-    [HttpPut("{id:guid}")]
+    /// <summary>
+    /// Обновить дату завершения обучения.
+    /// </summary>
+    /// <param name="id"> Идентификатор истории обучения. </param>
+    [HttpPatch("{id:guid}")]
+    [ProducesResponseType(typeof(Unit), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> UpdateHistoryDate(Guid id)
     {
         var userId = _userAccessor.GetUserId();
@@ -75,7 +90,13 @@ public class HistoryController : ControllerBase
         return result.ToActionResult();
     }
 
+    /// <summary>
+    /// Удалить историю обучения.
+    /// </summary>
+    /// <param name="id"> Идентификатор истории обучения. </param>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(typeof(Unit), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> DeleteHistory(Guid id)
     {
         var userId = _userAccessor.GetUserId();

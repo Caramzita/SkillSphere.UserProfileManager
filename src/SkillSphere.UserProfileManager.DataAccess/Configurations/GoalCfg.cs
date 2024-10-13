@@ -23,5 +23,11 @@ public class GoalCfg : IEntityTypeConfiguration<Goal>
         builder.Property(p => p.Progress)
             .IsRequired()
             .HasConversion<string>();
+
+        builder.HasOne<UserProfile>()
+            .WithMany(up => up.Goals)
+            .HasForeignKey(us => us.UserId)
+            .HasPrincipalKey(us => us.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

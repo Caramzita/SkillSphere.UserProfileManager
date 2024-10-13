@@ -23,5 +23,11 @@ public class LearningHistoryCfg : IEntityTypeConfiguration<LearningHistory>
         builder.Property(x => x.Description)
             .IsRequired()
             .HasMaxLength(250);
+
+        builder.HasOne<UserProfile>()
+            .WithMany(up => up.LearningHistories)
+            .HasForeignKey(us => us.UserId)
+            .HasPrincipalKey(us => us.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

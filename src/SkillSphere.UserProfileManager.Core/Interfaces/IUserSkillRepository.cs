@@ -6,7 +6,7 @@ public interface IUserSkillRepository
 {  
     IAsyncEnumerable<UserSkill> GetUserSkills(Guid userId);
 
-    Task<UserSkill?> GetUserSkillById(Guid skillId);
+    Task<UserSkill?> GetUserSkillById(Guid skillId, Guid userId);
 
     Task AddUserSkill(UserSkill userSkill);
 

@@ -6,13 +6,11 @@ public class UserSkill
 {
     public Guid UserId { get; init; }
 
-    public UserProfile UserProfile { get; set; }
-
-    public Guid SkillId { get; init; }
-
-    public Skill Skill { get; set; }
+    public Guid SkillId { get; set; }
 
     public SkillLevel Level { get; private set; }
+
+    public Skill Skill { get; set; } = null!;
 
     public UserSkill(Guid userId, Guid skillId)
     {

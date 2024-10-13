@@ -9,6 +9,7 @@ public class SkillCfg : IEntityTypeConfiguration<Skill>
     public void Configure(EntityTypeBuilder<Skill> builder)
     {
         builder.HasKey(x => x.Id);
+
         builder.HasAlternateKey(x => x.Name);
 
         builder.Property(x => x.Name)
@@ -17,5 +18,10 @@ public class SkillCfg : IEntityTypeConfiguration<Skill>
 
         builder.HasIndex(e => e.Name)
             .IsUnique();
+
+        builder.HasOne(s => s.Category)
+            .WithMany()
+            .HasForeignKey(s => s.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

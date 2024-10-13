@@ -1,30 +1,38 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using SkillSphere.Infrastructure.UseCases;
+using SkillSphere.UserProfileManager.Contracts.DTOs.Goal;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.Core.Models;
 
 namespace SkillSphere.UserProfileManager.UseCases.Goals.Queries.GetAllGoals;
 
-public class GetAllGoalsQuery : IRequest<Result<IEnumerable<Goal>>>;
+public record GetAllGoalsQuery(Guid UserId) : IRequest<Result<IEnumerable<GoalResponseDto>>>;
 
-public class GetAllGoalsQueryHandler : IRequestHandler<GetAllGoalsQuery, Result<IEnumerable<Goal>>>
+public class GetAllGoalsQueryHandler : IRequestHandler<GetAllGoalsQuery, Result<IEnumerable<GoalResponseDto>>>
 {
     private readonly IRepository<Goal> _goalRepository;
 
-    public GetAllGoalsQueryHandler(IRepository<Goal> goalRepository)
+    private readonly IMapper _mapper;
+
+    public GetAllGoalsQueryHandler(IRepository<Goal> goalRepository, IMapper mapper)
     {
         _goalRepository = goalRepository ?? throw new ArgumentNullException(nameof(goalRepository));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<Result<IEnumerable<Goal>>> Handle(GetAllGoalsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<IEnumerable<GoalResponseDto>>> Handle(GetAllGoalsQuery request, 
+        CancellationToken cancellationToken)
     {
-        var goals = await _goalRepository.GetAllAsync();
+        var goals = await _goalRepository.GetAllAsync(request.UserId);
 
         if (goals == null || !goals.Any())
         {
-            return Result<IEnumerable<Goal>>.Invalid("Цели не найдены.");
+            return Result<IEnumerable<GoalResponseDto>>.Invalid("Цели не найдены.");
         }
 
-        return Result<IEnumerable<Goal>>.Success(goals);
+        var goalsDto = _mapper.Map<IEnumerable<GoalResponseDto>>(goals);
+
+        return Result<IEnumerable<GoalResponseDto>>.Success(goalsDto);
     }
 }

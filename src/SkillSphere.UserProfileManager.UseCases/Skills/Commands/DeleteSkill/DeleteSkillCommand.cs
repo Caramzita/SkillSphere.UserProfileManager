@@ -5,10 +5,13 @@ namespace SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteSkill;
 
 public class DeleteSkillCommand : IRequest<Result<Unit>>
 {
-    public Guid Id { get; }
+    public Guid CategoryId { get; }
 
-    public DeleteSkillCommand(Guid id)
+    public Guid SkillId { get; }
+
+    public DeleteSkillCommand(Guid categoryId, Guid skillId)
     {
-        Id = id;
+        CategoryId = categoryId;
+        SkillId = skillId;
     }
 }

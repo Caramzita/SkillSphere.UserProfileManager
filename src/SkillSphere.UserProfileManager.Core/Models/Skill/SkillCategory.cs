@@ -2,9 +2,19 @@
 
 public class SkillCategory
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; init; }
 
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
-    public ICollection<Skill> Skills { get; set; } = new List<Skill>();
+    public SkillCategory(string name)
+    {
+        Id = Guid.NewGuid();
+        Name = name;
+    }
+
+    public SkillCategory(Guid id, string name)
+    {
+        Id = id;
+        Name = name;
+    }
 }

@@ -1,6 +1,6 @@
-﻿namespace SkillSphere.UserProfileManager.Contracts.DTOs;
+﻿namespace SkillSphere.UserProfileManager.Contracts.DTOs.LearningHistory;
 
-public class LearningHistoryDto
+public class LearningHistoryRequestDto
 {
     public string CourseTitle { get; set; } = string.Empty;
 

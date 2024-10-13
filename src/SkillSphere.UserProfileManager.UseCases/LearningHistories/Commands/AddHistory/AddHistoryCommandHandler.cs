@@ -1,12 +1,13 @@
-﻿using MediatR;
-using Microsoft.Extensions.Logging;
+﻿using AutoMapper;
+using MediatR;
 using SkillSphere.Infrastructure.UseCases;
+using SkillSphere.UserProfileManager.Contracts.DTOs.LearningHistory;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.Core.Models;
 
 namespace SkillSphere.UserProfileManager.UseCases.LearningHistories.Commands.AddHistory;
 
-public class AddHistoryCommandHandler : IRequestHandler<AddHistoryCommand, Result<LearningHistory>>
+public class AddHistoryCommandHandler : IRequestHandler<AddHistoryCommand, Result<LearningHistoryResponseDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -14,26 +15,26 @@ public class AddHistoryCommandHandler : IRequestHandler<AddHistoryCommand, Resul
 
     private readonly IUserProfileRepository _userProfileRepository;
 
-    private readonly ILogger<AddHistoryCommandHandler> _logger;
+    private readonly IMapper _mapper;
 
     public AddHistoryCommandHandler(IUnitOfWork unitOfWork, 
         IRepository<LearningHistory> historyRepository, 
         IUserProfileRepository userProfileRepository,
-        ILogger<AddHistoryCommandHandler> logger)
+        IMapper mapper)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _historyRepository = historyRepository ?? throw new ArgumentNullException(nameof(historyRepository));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<Result<LearningHistory>> Handle(AddHistoryCommand request, CancellationToken cancellationToken)
+    public async Task<Result<LearningHistoryResponseDto>> Handle(AddHistoryCommand request, CancellationToken cancellationToken)
     {
         var userProfile = await _userProfileRepository.GetProfileByUserId(request.UserId);
 
         if (userProfile == null)
         {
-            return Result<LearningHistory>.Invalid("Профиль пользователя не найден");
+            return Result<LearningHistoryResponseDto>.Invalid("Профиль пользователя не найден");
         }
 
         try
@@ -45,20 +46,22 @@ public class AddHistoryCommandHandler : IRequestHandler<AddHistoryCommand, Resul
                 request.Description, 
                 request.CompletedDate);
 
-            await _historyRepository.AddAsync(history);
             userProfile.AddLearningHistory(history);
+            await _historyRepository.AddAsync(history);
 
             _userProfileRepository.UpdateProfile(userProfile);
 
             await _unitOfWork.CompleteAsync();
             await _unitOfWork.CommitAsync();
 
-            return Result<LearningHistory>.Success(history);
+            var historyDto = _mapper.Map<LearningHistoryResponseDto>(history);
+
+            return Result<LearningHistoryResponseDto>.Success(historyDto);
         }
         catch (Exception)
         {
             await _unitOfWork.RollbackAsync();
-            return Result<LearningHistory>.Invalid("Ошибка при добавлении истории");
+            return Result<LearningHistoryResponseDto>.Invalid("Ошибка при добавлении истории");
         }
     }
 }

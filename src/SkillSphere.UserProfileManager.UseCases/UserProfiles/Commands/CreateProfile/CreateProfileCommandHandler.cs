@@ -1,12 +1,14 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using SkillSphere.Infrastructure.Security.AuthServices;
 using SkillSphere.Infrastructure.UseCases;
+using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.Core.Models;
 
 namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.CreateProfile;
 
-public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, Result<UserProfile>>
+public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, Result<UserProfileSummaryDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -14,29 +16,33 @@ public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand,
 
     private readonly IAuthorizationService _authorizationService;
 
+    private readonly IMapper _mapper;
+
     public CreateProfileCommandHandler(IUserProfileRepository userProfileRepository,
         IUnitOfWork unitOfWork,
-        IAuthorizationService authorizationService)
+        IAuthorizationService authorizationService,
+        IMapper mapper)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
         _authorizationService = authorizationService ?? throw new ArgumentNullException(nameof(authorizationService));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<Result<UserProfile>> Handle(CreateProfileCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UserProfileSummaryDto>> Handle(CreateProfileCommand request, CancellationToken cancellationToken)
     {
         var userExists = await _authorizationService.UserExistsAsync(request.UserId);
 
         if (!userExists)
         {
-            return Result<UserProfile>.Invalid("Пользователь не найден");
+            return Result<UserProfileSummaryDto>.Invalid("Пользователь не найден");
         }
 
         var existingProfile = await _userProfileRepository.GetProfileByUserId(request.UserId);
 
         if (existingProfile != null)
         {
-            return Result<UserProfile>.Invalid("Профиль уже существует");
+            return Result<UserProfileSummaryDto>.Invalid("Профиль уже существует");
         }
 
         var newProfile = new UserProfile(
@@ -49,6 +55,8 @@ public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand,
         await _userProfileRepository.AddProfile(newProfile);
         await _unitOfWork.CompleteAsync();
 
-        return Result<UserProfile>.Success(newProfile);
+        var newProfileDto = _mapper.Map<UserProfileSummaryDto>(newProfile);
+
+        return Result<UserProfileSummaryDto>.Success(newProfileDto);
     }
 }

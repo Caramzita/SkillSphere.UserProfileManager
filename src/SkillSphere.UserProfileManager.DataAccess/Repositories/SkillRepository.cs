@@ -25,6 +25,7 @@ public class SkillRepository : ISkillRepository
         return _context.Skills
             .AsNoTracking()
             .Where(s => s.CategoryId == categoryId)
+            .Include(skill => skill.Category)
             .AsAsyncEnumerable();
     }
 

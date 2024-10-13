@@ -1,12 +1,13 @@
-﻿using MediatR;
-using Microsoft.Extensions.Logging;
+﻿using AutoMapper;
+using MediatR;
 using SkillSphere.Infrastructure.UseCases;
+using SkillSphere.UserProfileManager.Contracts.DTOs.Goal;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.Core.Models;
 
 namespace SkillSphere.UserProfileManager.UseCases.Goals.Commands.AddGoal;
 
-public class AddGoalCommandHandler : IRequestHandler<AddGoalCommand, Result<Goal>>
+public class AddGoalCommandHandler : IRequestHandler<AddGoalCommand, Result<GoalResponseDto>>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -14,26 +15,31 @@ public class AddGoalCommandHandler : IRequestHandler<AddGoalCommand, Result<Goal
 
     private readonly IRepository<Goal> _goalRepository;
 
-    private readonly ILogger<AddGoalCommandHandler> _logger;
+    private readonly IMapper _mapper;
 
     public AddGoalCommandHandler(IUnitOfWork unitOfWork,
         IRepository<Goal> goalRepository,
-        ILogger<AddGoalCommandHandler> logger,
+        IMapper mapper,
         IUserProfileRepository userProfileRepository)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _goalRepository = goalRepository ?? throw new ArgumentNullException(nameof(goalRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _userProfileRepository = userProfileRepository;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
-    public async Task<Result<Goal>> Handle(AddGoalCommand request, CancellationToken cancellationToken)
+    public async Task<Result<GoalResponseDto>> Handle(AddGoalCommand request, CancellationToken cancellationToken)
     {
         var userProfile = await _userProfileRepository.GetProfileByUserId(request.UserId);
 
         if (userProfile == null)
         {
-            return Result<Goal>.Invalid("Профиль пользователя не найден");
+            return Result<GoalResponseDto>.Invalid("Профиль пользователя не найден");
+        }
+
+        if (userProfile.Goals.Count >= 10)
+        {
+            return Result<GoalResponseDto>.Invalid("Пользователь не может иметь больше 10 целей");
         }
 
         try
@@ -50,12 +56,14 @@ public class AddGoalCommandHandler : IRequestHandler<AddGoalCommand, Result<Goal
             await _unitOfWork.CompleteAsync();
             await _unitOfWork.CommitAsync();
 
-            return Result<Goal>.Success(goal);
+            var goalDto = _mapper.Map<GoalResponseDto>(goal);
+
+            return Result<GoalResponseDto>.Success(goalDto);
         }
         catch (Exception)
         {
             await _unitOfWork.RollbackAsync();
-            return Result<Goal>.Invalid("Ошибка при добавлении цели");
+            return Result<GoalResponseDto>.Invalid("Ошибка при добавлении цели");
         }
     }
 }

@@ -28,14 +28,17 @@ public class UserProfileCfg : IEntityTypeConfiguration<UserProfile>
 
         builder.HasMany(e => e.Skills)
             .WithOne()
+            .HasForeignKey(us => us.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(e => e.Goals)
             .WithOne()
+            .HasForeignKey(us => us.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(e => e.LearningHistories)
             .WithOne()
+            .HasForeignKey(us => us.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

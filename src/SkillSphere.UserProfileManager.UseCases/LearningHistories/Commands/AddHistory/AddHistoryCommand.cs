@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SkillSphere.Infrastructure.UseCases;
-using SkillSphere.UserProfileManager.Core.Models;
+using SkillSphere.UserProfileManager.Contracts.DTOs.LearningHistory;
 
 namespace SkillSphere.UserProfileManager.UseCases.LearningHistories.Commands.AddHistory;
 
-public class AddHistoryCommand : IRequest<Result<LearningHistory>>
+public class AddHistoryCommand : IRequest<Result<LearningHistoryResponseDto>>
 {
     public Guid UserId { get; set; }
 

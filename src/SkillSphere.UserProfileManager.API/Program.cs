@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using SkillSphere.Infrastructure.Security.AuthServices;
 using SkillSphere.Infrastructure.Security.UserAccessor;
 using SkillSphere.UserProfileManager.Core.Interfaces;
+using SkillSphere.UserProfileManager.UseCases.Profiles;
 
 namespace SkillSphere.UserProfileManager.API;
 
@@ -87,7 +88,7 @@ internal class Program
             options.UseNpgsql(configuration["DatabaseConnection"]));
 
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(CreateProfileCommand).Assembly));
-        services.AddAutoMapper(typeof(ControllerMappingProfile).Assembly);
+        services.AddAutoMapper(typeof(ControllerMappingProfile).Assembly, typeof(UserProfileMappingProfile).Assembly);
 
         services.AddHttpClient<IAuthorizationService, AuthorizationService>();
         services.AddScoped<IUserAccessor, UserAccessor>();

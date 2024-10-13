@@ -1,10 +1,10 @@
 ﻿using MediatR;
 using SkillSphere.Infrastructure.UseCases;
-using SkillSphere.UserProfileManager.Core.Models;
+using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
 
 namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.UpdateProfile;
 
-public class UpdateProfileCommand : IRequest<Result<UserProfile>>
+public class UpdateProfileCommand : IRequest<Result<UserProfileSummaryDto>>
 {
     public Guid UserId { get; set; }
 

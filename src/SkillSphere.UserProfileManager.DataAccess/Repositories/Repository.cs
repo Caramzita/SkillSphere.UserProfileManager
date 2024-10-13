@@ -13,10 +13,11 @@ public class Repository<T> : IRepository<T> where T : BaseModel
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync(Guid userId)
     {
         return await _context.Set<T>()
             .AsNoTracking()
+            .Where(x => x.UserId == userId)
             .ToListAsync()
             .ConfigureAwait(false);
     }
@@ -36,7 +37,7 @@ public class Repository<T> : IRepository<T> where T : BaseModel
 
     public void UpdateAsync(T entity)
     {
-        _context.Set<T>().Update(entity);
+        _context.Set<T>().Attach(entity);
     }
 
     public void Delete(T entity)
