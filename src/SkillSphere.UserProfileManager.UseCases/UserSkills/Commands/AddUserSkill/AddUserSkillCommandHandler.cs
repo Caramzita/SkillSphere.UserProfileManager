@@ -13,18 +13,22 @@ public class AddUserSkillCommandHandler : IRequestHandler<AddUserSkillCommand, R
 
     private readonly IUserProfileRepository _userProfileRepository;
 
+    private readonly ISkillRepository _skillRepository;
+
     private readonly IUnitOfWork _unitOfWork;
 
     private readonly IMapper _mapper;
 
     public AddUserSkillCommandHandler(IUserSkillRepository userSkillRepository, 
         IUserProfileRepository userProfileRepository,
+        ISkillRepository skillRepository,
         IUnitOfWork unitOfWork, 
         IMapper mapper)
     {
         _userSkillRepository = userSkillRepository ?? throw new ArgumentNullException(nameof(userSkillRepository));
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
+        _skillRepository = skillRepository ?? throw new ArgumentNullException(nameof(skillRepository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -42,6 +46,13 @@ public class AddUserSkillCommandHandler : IRequestHandler<AddUserSkillCommand, R
             return Result<UserSkillResponseDto>.Invalid("Пользователь не может иметь больше 15 навыков");
         }
 
+        var skill = await _skillRepository.GetSkillById(request.SkillId);
+
+        if (skill == null)
+        {
+            return Result<UserSkillResponseDto>.Invalid("Такой навык не найден");
+        }
+
         try
         {
             await _unitOfWork.BeginTransactionAsync();
@@ -50,12 +61,13 @@ public class AddUserSkillCommandHandler : IRequestHandler<AddUserSkillCommand, R
 
             userProfile.AddSkill(userSkill);         
             await _userSkillRepository.AddUserSkill(userSkill);
-            _userProfileRepository.UpdateProfile(userProfile);
 
             await _unitOfWork.CompleteAsync();
             await _unitOfWork.CommitAsync();
 
             var userSkillDto = _mapper.Map<UserSkillResponseDto>(userSkill);
+            userSkillDto.SkillName = skill.Name;
+            userSkillDto.CategoryName = skill.Category.Name;
 
             return Result<UserSkillResponseDto>.Success(userSkillDto);
         }

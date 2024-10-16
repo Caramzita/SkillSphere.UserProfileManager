@@ -42,7 +42,7 @@ public class UpdateGoalProgressCommandHandler : IRequestHandler<UpdateGoalProgre
         {
             await _unitOfWork.BeginTransactionAsync();
 
-            goal.Progress = request.Progress;
+            goal.UpdateGoalProgress(request.Progress);
             _goalRepository.UpdateAsync(goal);
 
             await _unitOfWork.CompleteAsync();

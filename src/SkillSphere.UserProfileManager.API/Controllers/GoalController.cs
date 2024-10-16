@@ -9,6 +9,7 @@ using SkillSphere.UserProfileManager.UseCases.Goals.Commands.AddGoal;
 using SkillSphere.UserProfileManager.UseCases.Goals.Commands.DeleteGoal;
 using SkillSphere.UserProfileManager.UseCases.Goals.Commands.UpdateGoalProgress;
 using SkillSphere.UserProfileManager.UseCases.Goals.Queries.GetAllGoals;
+using SkillSphere.UserProfileManager.UseCases.Goals.Queries.GetGoal;
 
 namespace SkillSphere.UserProfileManager.API.Controllers;
 
@@ -44,12 +45,29 @@ public class GoalController : ControllerBase
     /// Получить все цели пользователя.
     /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(GoalResponseDto), 200)]
+    [ProducesResponseType(typeof(IEnumerable<GoalResponseDto>), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> GetAllUserGoals()
     {
         var userId = _userAccessor.GetUserId();
         var command = new GetAllGoalsQuery(userId);
+
+        var result = await _mediator.Send(command);
+
+        return result.ToActionResult();
+    }
+
+    /// <summary>
+    /// Получить цель по идентификатору.
+    /// </summary>
+    /// <param name="goalId"> Идентификатор цели. </param>
+    [HttpGet("{goalId:guid}")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(GoalResponseDto), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
+    public async Task<IActionResult> GetGoalById(Guid goalId)
+    {
+        var command = new GetGoalQuery(goalId);
 
         var result = await _mediator.Send(command);
 

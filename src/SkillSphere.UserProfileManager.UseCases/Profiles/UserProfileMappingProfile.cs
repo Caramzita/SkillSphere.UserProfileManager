@@ -32,5 +32,9 @@ public class UserProfileMappingProfile : Profile
             .ForMember(dest => dest.SkillId, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Name))
             .ForMember(dest => dest.SkillName, opt => opt.MapFrom(src => src.Name));
+
+        CreateMap<Skill, SkillsListRequestDto>()
+            .ForMember(dest => dest.SkillId, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.SkillName, opt => opt.MapFrom(src => src.Name));
     }
 }

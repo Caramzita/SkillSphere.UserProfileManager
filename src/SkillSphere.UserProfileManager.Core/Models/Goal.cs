@@ -8,7 +8,7 @@ public class Goal : BaseModel
 
     public DateTime CreatedDate { get; init; }
 
-    public GoalProgress Progress { get; set; }
+    public GoalProgress Progress { get; private set; }
 
     public Goal(Guid userId, string title)
     {
@@ -26,5 +26,10 @@ public class Goal : BaseModel
         Title = title;
         CreatedDate = createdDate;
         Progress = progress;
+    }
+
+    public void UpdateGoalProgress(GoalProgress goalProgress)
+    {
+        Progress = goalProgress;
     }
 }

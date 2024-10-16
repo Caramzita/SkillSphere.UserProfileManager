@@ -23,11 +23,10 @@ public class UserProfileRepository : IUserProfileRepository
     public async Task<UserProfile?> GetProfileByUserId(Guid userId)
     {
         return await _context.UserProfiles
-            .AsNoTracking()
             .Include(x => x.Goals)
             .Include(x => x.Skills)
                 .ThenInclude(us => us.Skill)
-                .ThenInclude(s => s.Category)
+                    .ThenInclude(s => s.Category)
             .Include(x => x.LearningHistories)
             .AsSplitQuery()
             .FirstOrDefaultAsync(x => x.UserId == userId)

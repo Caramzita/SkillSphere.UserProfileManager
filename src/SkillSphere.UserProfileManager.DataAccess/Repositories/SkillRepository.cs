@@ -40,8 +40,17 @@ public class SkillRepository : ISkillRepository
     {
         return await _context.Skills
             .AsNoTracking()
+            .Include(s => s.Category).AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == skillId);
-    }   
+    }
+
+    public async Task<List<Skill>> GetSkillsByIdsAsync(List<Guid> skillIds)
+    {
+        return await _context.Skills
+            .AsNoTracking()
+            .Where(skill => skillIds.Contains(skill.Id))
+            .ToListAsync();
+    }
 
     public async Task AddCategory(SkillCategory category)
     {

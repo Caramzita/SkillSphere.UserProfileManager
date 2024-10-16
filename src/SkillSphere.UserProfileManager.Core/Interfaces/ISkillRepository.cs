@@ -10,6 +10,8 @@ public interface ISkillRepository
 
     Task<SkillCategory?> GetCategoryById(Guid categoryId);
 
+    Task<List<Skill>> GetSkillsByIdsAsync(List<Guid> skillIds);
+
     Task<Skill?> GetSkillById(Guid skillId);
 
     Task AddCategory(SkillCategory category);

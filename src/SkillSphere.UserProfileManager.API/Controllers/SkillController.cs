@@ -10,15 +10,15 @@ using SkillSphere.UserProfileManager.UseCases.Skills.Commands.AddSkill;
 using SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteCategory;
 using SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteSkill;
 using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetCategorySkills;
-using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetSkillById;
 using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetSkillCategories;
+using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetSkillsByIds;
 
 namespace SkillSphere.UserProfileManager.API.Controllers;
 
 /// <summary>
 /// Предоставляет Rest API для работы с навыками.
 /// </summary>
-[Route("api/categories")]
+[Route("api")]
 [ApiController]
 [Authorize]
 public class SkillController : ControllerBase
@@ -42,7 +42,7 @@ public class SkillController : ControllerBase
     /// <summary>
     /// Получить все категории навыков.
     /// </summary>
-    [HttpGet]
+    [HttpGet("categories")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(SkillCategory), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
@@ -57,7 +57,7 @@ public class SkillController : ControllerBase
     /// Получить все навыки категории.
     /// </summary>
     /// <param name="categoryId"> Идентификатор категории. </param>
-    [HttpGet("{categoryId:guid}/skills")]
+    [HttpGet("categories/{categoryId:guid}/skills")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(SkillResponseDto), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
@@ -68,20 +68,37 @@ public class SkillController : ControllerBase
         return _mediator.CreateStream(query);
     }
 
-    /// <summary>
-    /// Получить навык по идентификатору.
-    /// </summary>
-    /// <param name="categoryId"> Идентификатор категории. </param>
-    /// <param name="skillId"> Идентификатор навыка. </param>
-    [HttpGet("{categoryId:guid}/skills/{skillId:guid}")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(SkillResponseDto), 200)]
-    [ProducesResponseType(typeof(List<string>), 400)]
-    public async Task<IActionResult> GetSkillById(Guid categoryId, Guid skillId)
-    {
-        var command = new GetSkillByIdQuery(categoryId, skillId);
+    ///// <summary>
+    ///// Получить навык по идентификатору.
+    ///// </summary>
+    ///// <param name="skillId"> Идентификатор навыка. </param>
+    //[HttpGet("skills/{skillId:guid}")]
+    //[AllowAnonymous]
+    //[ProducesResponseType(typeof(SkillResponseDto), 200)]
+    //[ProducesResponseType(typeof(List<string>), 400)]
+    //public async Task<IActionResult> GetSkillById(Guid skillId)
+    //{
+    //    var command = new GetSkillByIdQuery(skillId);
 
-        var result = await _mediator.Send(command);
+    //    var result = await _mediator.Send(command);
+
+    //    return result.ToActionResult();
+    //}
+
+    /// <summary>
+    /// Проверяет наличие навыков по переданным идентификаторам.
+    /// </summary>
+    /// <param name="skillIds"> Список идентификаторов навыков, которые необходимо проверить. </param>
+    /// <returns></returns>
+    [HttpPost("skills/check-skills")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(List<SkillResponseDto>), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
+    public async Task<IActionResult> CheckSkills([FromBody] List<Guid> skillIds)
+    {
+        var query = new GetSkillsByIdsQuery(skillIds);
+
+        var result = await _mediator.Send(query);
 
         return result.ToActionResult();
     }
@@ -91,7 +108,7 @@ public class SkillController : ControllerBase
     /// </summary>
     /// <param name="categoryId"> Идентификатор категории. </param>
     /// <param name="skillDto"> Модель данных навыка. </param>
-    [HttpPost("{categoryId:guid}/skills")]
+    [HttpPost("categories/{categoryId:guid}/skills")]
     [ProducesResponseType(typeof(SkillResponseDto), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> AddSkill(Guid categoryId, [FromBody] SkillRequestDto skillDto)
@@ -108,7 +125,7 @@ public class SkillController : ControllerBase
     /// </summary>
     /// <param name="categoryId"> Идентификатор категории. </param>
     /// <param name="skillId"> Идентификатор навыка. </param>
-    [HttpDelete("{categoryId:guid}/skills/{skillId:guid}")]
+    [HttpDelete("categories/{categoryId:guid}/skills/{skillId:guid}")]
     [ProducesResponseType(typeof(Unit), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> DeleteSkill(Guid categoryId, Guid skillId)
@@ -124,7 +141,7 @@ public class SkillController : ControllerBase
     /// Добавить категорию.
     /// </summary>
     /// <param name="category"> Модель данных категории. </param>
-    [HttpPost]
+    [HttpPost("categories")]
     [ProducesResponseType(typeof(SkillCategory), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> AddCategory([FromBody] CategoryRequestDto category)
@@ -139,7 +156,7 @@ public class SkillController : ControllerBase
     /// Удалить категорию.
     /// </summary>
     /// <param name="categoryId"> Идентификатор категории. </param>
-    [HttpDelete("{categoryId:guid}")]
+    [HttpDelete("categories/{categoryId:guid}")]
     [ProducesResponseType(typeof(Unit), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> DeleteCategory(Guid categoryId)

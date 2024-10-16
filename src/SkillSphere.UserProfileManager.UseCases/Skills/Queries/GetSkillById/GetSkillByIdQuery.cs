@@ -6,7 +6,7 @@ using SkillSphere.UserProfileManager.Core.Interfaces;
 
 namespace SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetSkillById;
 
-public record GetSkillByIdQuery(Guid CategoryId, Guid SkillId) : IRequest<Result<SkillResponseDto>>;
+public record GetSkillByIdQuery(Guid SkillId) : IRequest<Result<SkillResponseDto>>;
 
 public class GetSkillByIdQueryHandler : IRequestHandler<GetSkillByIdQuery, Result<SkillResponseDto>>
 {
