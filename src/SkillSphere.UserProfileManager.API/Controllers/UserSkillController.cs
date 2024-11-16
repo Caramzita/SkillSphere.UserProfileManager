@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SkillSphere.Infrastructure.Security.UserAccessor;
 using SkillSphere.Infrastructure.UseCases;
 using SkillSphere.UserProfileManager.Contracts.DTOs.UserSkill;
-using SkillSphere.UserProfileManager.UseCases.UserSkills.Commands.AddUserSkill;
+using SkillSphere.UserProfileManager.UseCases.UserSkills.Commands.AddUserSkills;
 using SkillSphere.UserProfileManager.UseCases.UserSkills.Commands.DeleteUserSkill;
 using SkillSphere.UserProfileManager.UseCases.UserSkills.Queries.GetUserSkillById;
 using SkillSphere.UserProfileManager.UseCases.UserSkills.Queries.GetUserSkills;
@@ -71,12 +71,12 @@ public class UserSkillController : ControllerBase
     /// </summary>
     /// <param name="request"> Модель данных навыка пользователя. </param>
     [HttpPost]
-    [ProducesResponseType(typeof(UserSkillResponseDto), 200)]
+    [ProducesResponseType(typeof(List<UserSkillResponseDto>), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
     public async Task<IActionResult> AddUserSkill([FromBody] UserSkillRequestDto request)
     {
         var userId = _userAccessor.GetUserId();
-        var command = new AddUserSkillCommand(userId, request.SkillId);
+        var command = new AddUserSkillsCommand(userId, request.SkillIds);
 
         var result = await _mediator.Send(command);
 

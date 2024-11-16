@@ -4,7 +4,7 @@ using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
 
 namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.CreateProfile;
 
-public class CreateProfileCommand : IRequest<Result<UserProfileSummaryDto>>
+public class CreateProfileCommand : IRequest<Result<UserProfileSummaryDto>>, IProfileCommand
 {
     public Guid UserId { get; set; }
 

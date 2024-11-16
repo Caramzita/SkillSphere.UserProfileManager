@@ -10,7 +10,7 @@ using SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteSkill;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.CreateProfile;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.UpdateProfile;
 
-namespace SkillSphere.UserProfileManager.API;
+namespace SkillSphere.UserProfileManager.API.Profiles;
 
 /// <summary>
 /// Профиль AutoMapper для маппинга объектов запросов из контроллера на команды.
@@ -32,6 +32,6 @@ public class ControllerMappingProfile : Profile
 
         CreateMap<GoalRequestDto, AddGoalCommand>();
 
-        CreateMap<LearningHistoryRequestDto, AddHistoryCommand>();   
+        CreateMap<LearningHistoryRequestDto, AddHistoryCommand>();
     }
 }

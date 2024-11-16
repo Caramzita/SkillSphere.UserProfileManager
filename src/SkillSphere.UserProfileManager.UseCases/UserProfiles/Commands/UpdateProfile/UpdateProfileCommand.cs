@@ -4,7 +4,7 @@ using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
 
 namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.UpdateProfile;
 
-public class UpdateProfileCommand : IRequest<Result<UserProfileSummaryDto>>
+public class UpdateProfileCommand : IRequest<Result<UserProfileSummaryDto>>, IProfileCommand
 {
     public Guid UserId { get; set; }
 

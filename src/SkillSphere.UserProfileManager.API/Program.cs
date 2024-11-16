@@ -13,6 +13,8 @@ using SkillSphere.Infrastructure.Security.AuthServices;
 using SkillSphere.Infrastructure.Security.UserAccessor;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.UseCases.Profiles;
+using SkillSphere.UserProfileManager.API.Profiles;
+using FluentValidation;
 
 namespace SkillSphere.UserProfileManager.API;
 
@@ -90,7 +92,12 @@ internal class Program
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(CreateProfileCommand).Assembly));
         services.AddAutoMapper(typeof(ControllerMappingProfile).Assembly, typeof(UserProfileMappingProfile).Assembly);
 
-        services.AddHttpClient<IAuthorizationService, AuthorizationService>();
+        services.AddHttpClient<IAuthorizationService, AuthorizationService>(client =>
+        {
+            client.BaseAddress = new Uri(configuration["AuthorizationService"]!);
+        });
+
+
         services.AddScoped<IUserAccessor, UserAccessor>();
 
         services.AddScoped<IUserProfileRepository, UserProfileRepository>();
@@ -101,7 +108,7 @@ internal class Program
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
-        //services.AddValidatorsFromAssemblyContaining<RegisterCommandValidator>();
+        services.AddValidatorsFromAssemblyContaining<CreateProfileCommandValidator>();
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
     }
 
