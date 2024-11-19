@@ -19,7 +19,7 @@ public class GetSkillCategoriesQueryHandler : IStreamRequestHandler<GetSkillCate
     public async IAsyncEnumerable<SkillCategory> Handle(GetSkillCategoriesQuery request, 
         [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        await foreach (var profile in _skillRepository.GetCategories())
+        await foreach (var profile in _skillRepository.GetCategoriesWithSkills())
         {
             yield return profile;
         }

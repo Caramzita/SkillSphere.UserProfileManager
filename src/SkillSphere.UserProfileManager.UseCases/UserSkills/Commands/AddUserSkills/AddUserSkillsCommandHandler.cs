@@ -73,7 +73,6 @@ public class AddUserSkillsCommandHandler : IRequestHandler<AddUserSkillsCommand,
 
                 var userSkillDto = _mapper.Map<UserSkillResponseDto>(userSkill);
                 userSkillDto.SkillName = skill.Name;
-                //userSkillDto.CategoryName = skill.Category.Name;
 
                 addedSkills.Add(userSkillDto);
             }

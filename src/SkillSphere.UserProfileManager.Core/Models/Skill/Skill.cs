@@ -8,8 +8,6 @@ public class Skill
 
     public Guid CategoryId { get; init; }
 
-    public SkillCategory Category { get; set; }
-
     public Skill(string name, Guid categoryId)
     {
         Id = Guid.NewGuid();
@@ -17,11 +15,10 @@ public class Skill
         Name = name;
     }
 
-    public Skill(Guid id, Guid categoryId, string name, SkillCategory category)
+    public Skill(Guid id, Guid categoryId, string name)
     {
         Id = id;
         CategoryId = categoryId;
         Name = name;
-        Category = category;
     }
 }

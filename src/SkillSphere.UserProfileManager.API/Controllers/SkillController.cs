@@ -9,7 +9,6 @@ using SkillSphere.UserProfileManager.UseCases.Skills.Commands.AddCategory;
 using SkillSphere.UserProfileManager.UseCases.Skills.Commands.AddSkill;
 using SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteCategory;
 using SkillSphere.UserProfileManager.UseCases.Skills.Commands.DeleteSkill;
-using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetCategorySkills;
 using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetSkillCategories;
 using SkillSphere.UserProfileManager.UseCases.Skills.Queries.GetSkillsByIds;
 
@@ -57,16 +56,16 @@ public class SkillController : ControllerBase
     /// Получить все навыки категории.
     /// </summary>
     /// <param name="categoryId"> Идентификатор категории. </param>
-    [HttpGet("categories/{categoryId:guid}/skills")]
-    [AllowAnonymous]
-    [ProducesResponseType(typeof(SkillResponseDto), 200)]
-    [ProducesResponseType(typeof(List<string>), 400)]
-    public IAsyncEnumerable<SkillResponseDto> GetCategorySkills(Guid categoryId)
-    {
-        var query = new GetCategorySkillsQuery(categoryId);
+    //[HttpGet("categories/{categoryId:guid}/skills")]
+    //[AllowAnonymous]
+    //[ProducesResponseType(typeof(SkillResponseDto), 200)]
+    //[ProducesResponseType(typeof(List<string>), 400)]
+    //public IAsyncEnumerable<SkillResponseDto> GetCategorySkills(Guid categoryId)
+    //{
+    //    var query = new GetCategorySkillsQuery(categoryId);
 
-        return _mediator.CreateStream(query);
-    }
+    //    return _mediator.CreateStream(query);
+    //}
 
     ///// <summary>
     ///// Получить навык по идентификатору.

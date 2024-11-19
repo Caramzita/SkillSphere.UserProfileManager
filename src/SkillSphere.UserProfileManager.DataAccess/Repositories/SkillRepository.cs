@@ -13,21 +13,22 @@ public class SkillRepository : ISkillRepository
         _context = context ?? throw new ArgumentNullException(nameof(context));
     }
 
-    public IAsyncEnumerable<SkillCategory> GetCategories()
+    public IAsyncEnumerable<SkillCategory> GetCategoriesWithSkills()
     {
         return _context.SkillCategories
+            .Include(category => category.Skills)
             .AsNoTracking()
             .AsAsyncEnumerable();
     }
 
-    public IAsyncEnumerable<Skill> GetCategorySkills(Guid categoryId)
-    {
-        return _context.Skills
-            .AsNoTracking()
-            .Where(s => s.CategoryId == categoryId)
-            .Include(skill => skill.Category)
-            .AsAsyncEnumerable();
-    }
+    //public IAsyncEnumerable<Skill> GetCategorySkills(Guid categoryId)
+    //{
+    //    return _context.Skills
+    //        .AsNoTracking()
+    //        .Where(s => s.CategoryId == categoryId)
+    //        .Include(skill => skill.Category)
+    //        .AsAsyncEnumerable();
+    //}
 
     public async Task<SkillCategory?> GetCategoryById(Guid categoryId)
     {
@@ -40,7 +41,6 @@ public class SkillRepository : ISkillRepository
     {
         return await _context.Skills
             .AsNoTracking()
-            .Include(s => s.Category).AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == skillId);
     }
 

@@ -8,7 +8,5 @@ public class UserSkillResponseDto
 
     public string SkillName { get; set; }
 
-    public string CategoryName { get; set; }
-
     public SkillLevel Level { get; set; }
 }

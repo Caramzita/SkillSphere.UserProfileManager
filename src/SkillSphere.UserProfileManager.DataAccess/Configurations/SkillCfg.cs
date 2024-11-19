@@ -19,9 +19,9 @@ public class SkillCfg : IEntityTypeConfiguration<Skill>
         builder.HasIndex(e => e.Name)
             .IsUnique();
 
-        builder.HasOne(s => s.Category)
-            .WithMany()
-            .HasForeignKey(s => s.CategoryId)
+        builder.HasOne<SkillCategory>()
+            .WithMany(category => category.Skills)
+            .HasForeignKey(skill => skill.CategoryId) 
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

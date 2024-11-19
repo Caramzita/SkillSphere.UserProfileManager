@@ -14,8 +14,9 @@ public class SkillCategoryCfg : IEntityTypeConfiguration<SkillCategory>
             .IsRequired()
             .HasMaxLength(50);
 
-        builder.HasMany<Skill>()
-            .WithOne(s => s.Category)
-            .HasForeignKey(s => s.CategoryId);
+        builder.HasMany(category => category.Skills)
+            .WithOne()
+            .HasForeignKey(skill => skill.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

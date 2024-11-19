@@ -4,9 +4,9 @@ namespace SkillSphere.UserProfileManager.Core.Interfaces;
 
 public interface ISkillRepository
 {
-    IAsyncEnumerable<SkillCategory> GetCategories();
+    IAsyncEnumerable<SkillCategory> GetCategoriesWithSkills();
 
-    IAsyncEnumerable<Skill> GetCategorySkills(Guid categoryId);
+    //IAsyncEnumerable<Skill> GetCategorySkills(Guid categoryId);
 
     Task<SkillCategory?> GetCategoryById(Guid categoryId);
 

@@ -10,6 +10,7 @@ using SkillSphere.UserProfileManager.UseCases.UserProfiles.Queries.GetAllProfile
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.DeleteProfile;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.UpdateProfile;
 using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
+using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.CheckProfile;
 
 namespace SkillSphere.UserProfileManager.API.Controllers;
 
@@ -39,7 +40,7 @@ public class UserProfileController : ControllerBase
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         _userAccessor = userAccessor ?? throw new ArgumentNullException(nameof(userAccessor));
-    }
+        }
 
     /// <summary>
     /// Получить все профиля.
@@ -71,6 +72,21 @@ public class UserProfileController : ControllerBase
         return result.ToActionResult();
     }
 
+    /// <summary>
+    /// Проверить создан ли профиль пользователя.
+    /// </summary>
+    [HttpGet("profile/check")]
+    [ProducesResponseType(typeof(bool), 200)]
+    public async Task<IActionResult> CheckProfile()
+    {
+        var userId = _userAccessor.GetUserId();
+        var command = new CheckProfileCommand(userId);
+
+        var result = await _mediator.Send(command);
+
+        return result.ToActionResult();
+    }
+    
     /// <summary>
     /// Создать профиль.
     /// </summary>

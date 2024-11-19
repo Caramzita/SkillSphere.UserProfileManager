@@ -203,13 +203,11 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
 
             modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill.Skill", b =>
                 {
-                    b.HasOne("SkillSphere.UserProfileManager.Core.Models.Skill.SkillCategory", "Category")
-                        .WithMany()
+                    b.HasOne("SkillSphere.UserProfileManager.Core.Models.Skill.SkillCategory", null)
+                        .WithMany("Skills")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill.UserSkill", b =>
@@ -228,6 +226,11 @@ namespace SkillSphere.UserProfileManager.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("Skill");
+                });
+
+            modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.Skill.SkillCategory", b =>
+                {
+                    b.Navigation("Skills");
                 });
 
             modelBuilder.Entity("SkillSphere.UserProfileManager.Core.Models.UserProfile", b =>

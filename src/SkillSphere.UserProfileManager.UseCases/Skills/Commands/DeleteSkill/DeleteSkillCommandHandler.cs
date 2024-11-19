@@ -18,6 +18,13 @@ public class DeleteSkillCommandHandler : IRequestHandler<DeleteSkillCommand, Res
 
     public async Task<Result<Unit>> Handle(DeleteSkillCommand request, CancellationToken cancellationToken)
     {
+        var category = await _skillRepository.GetCategoryById(request.CategoryId);
+
+        if (category == null)
+        {
+            return Result<Unit>.Invalid("Нет такой категории");
+        }
+
         var skill = await _skillRepository.GetSkillById(request.SkillId);
 
         if (skill == null)
@@ -27,6 +34,7 @@ public class DeleteSkillCommandHandler : IRequestHandler<DeleteSkillCommand, Res
 
         try
         {
+            category.RemoveSkill(skill);
             _skillRepository.DeleteSkill(skill);
             await _unitOfWork.CompleteAsync();
 

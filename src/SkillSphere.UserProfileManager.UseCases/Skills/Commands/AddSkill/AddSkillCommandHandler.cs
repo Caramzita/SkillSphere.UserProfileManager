@@ -37,6 +37,7 @@ public class AddSkillCommandHandler : IRequestHandler<AddSkillCommand, Result<Sk
 
         try
         {
+            category.AddSkill(skill);
             await _skillRepository.AddSkill(skill);
             await _unitOfWork.CompleteAsync();
 

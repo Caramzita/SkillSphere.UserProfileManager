@@ -8,6 +8,8 @@ public interface IUserProfileRepository
 
     Task<UserProfile?> GetProfileByUserId(Guid userId);
 
+    Task<bool> ProfileExists(Guid userId);
+
     Task AddProfile(UserProfile userProfile);
 
     void UpdateProfile(UserProfile profile);

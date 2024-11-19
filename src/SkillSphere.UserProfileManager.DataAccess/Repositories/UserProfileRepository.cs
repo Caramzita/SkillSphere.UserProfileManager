@@ -26,11 +26,17 @@ public class UserProfileRepository : IUserProfileRepository
             .Include(x => x.Goals)
             .Include(x => x.Skills)
                 .ThenInclude(us => us.Skill)
-                    .ThenInclude(s => s.Category)
             .Include(x => x.LearningHistories)
             .AsSplitQuery()
             .FirstOrDefaultAsync(x => x.UserId == userId)
             .ConfigureAwait(false);
+    }
+
+    public async Task<bool> ProfileExists(Guid userId)
+    {
+        return await _context.UserProfiles
+            .AsNoTracking()
+            .AnyAsync(profile => profile.UserId == userId);
     }
 
     public async Task AddProfile(UserProfile profile)

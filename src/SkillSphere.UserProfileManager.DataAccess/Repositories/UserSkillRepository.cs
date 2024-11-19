@@ -18,7 +18,6 @@ public class UserSkillRepository : IUserSkillRepository
         return _context.UserSkills
             .AsNoTracking()
             .Include(us => us.Skill)
-                .ThenInclude(us => us.Category)
             .Where(us => us.UserId == userId)
             .AsSplitQuery()
             .AsAsyncEnumerable();
@@ -29,7 +28,6 @@ public class UserSkillRepository : IUserSkillRepository
         return await _context.UserSkills
             .AsNoTracking()
             .Include(us => us.Skill)
-                .ThenInclude(us => us.Category).AsNoTracking()
             .Where(ud => ud.UserId == userId)
             .FirstOrDefaultAsync(us => us.SkillId == skillId);
     }
