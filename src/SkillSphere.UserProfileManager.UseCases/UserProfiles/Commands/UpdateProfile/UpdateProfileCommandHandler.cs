@@ -12,14 +12,18 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
 
     private readonly IUserProfileRepository _userProfileRepository;
 
+    private readonly IImageUploadService _imageUploadService;
+
     private readonly IMapper _mapper;
 
     public UpdateProfileCommandHandler(IUnitOfWork unitOfWork,
         IUserProfileRepository userProfileRepository,
+        IImageUploadService imageUploadService,
         IMapper mapper)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
+        _imageUploadService = imageUploadService ?? throw new ArgumentNullException(nameof(imageUploadService));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
@@ -32,9 +36,16 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
             return Result<UserProfileSummaryDto>.Invalid("Профиль не существует");
         }
 
+        var imageUrl = string.Empty;
+
+        if (request.ProfilePicture != null)
+        {
+            imageUrl = await _imageUploadService.UploadImageAsync(request.ProfilePicture);
+        }
+
         existingProfile.Name = request.Name;
         existingProfile.Bio = request.Bio;
-        existingProfile.ProfilePictureUrl = request.ProfilePictureUrl!;
+        existingProfile.ProfilePictureUrl = imageUrl;
 
         _userProfileRepository.UpdateProfile(existingProfile);
         await _unitOfWork.CompleteAsync();

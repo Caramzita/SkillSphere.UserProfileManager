@@ -15,6 +15,8 @@ using SkillSphere.UserProfileManager.Core.Interfaces;
 using SkillSphere.UserProfileManager.UseCases.Profiles;
 using SkillSphere.UserProfileManager.API.Profiles;
 using FluentValidation;
+using SkillSphere.UserProfileManager.UseCases.Services;
+using Microsoft.Extensions.FileProviders;
 
 namespace SkillSphere.UserProfileManager.API;
 
@@ -105,6 +107,7 @@ internal class Program
         services.AddScoped<IUserSkillRepository, UserSkillRepository>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IImageUploadService, ImageUploadService>();
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
@@ -123,12 +126,20 @@ internal class Program
             app.UseSwaggerUI();
         }
 
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(
+            Path.Combine(builder.Environment.ContentRootPath, @"..\..\..\SkillSphere.Files")),
+            RequestPath = "/SkillSphere.Files"
+        });
+
+        app.UseHttpsRedirection();
+
         app.UseRouting();
         app.UseCors();
 
-        app.UseMiddleware<ErrorExceptionHandler>();
-        app.UseHttpsRedirection();
-        app.UseAuthorization();
+        app.UseMiddleware<ErrorExceptionHandler>();     
+        app.UseAuthorization();       
 
         app.MapControllers();
 

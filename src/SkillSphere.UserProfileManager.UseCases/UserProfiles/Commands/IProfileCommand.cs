@@ -1,4 +1,6 @@
-﻿namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands;
 
 public interface IProfileCommand
 {
@@ -6,7 +8,7 @@ public interface IProfileCommand
 
     string Name { get; }
 
-    string? ProfilePictureUrl { get; }
+    IFormFile? ProfilePicture { get; }
 
     string Bio { get; }
 }

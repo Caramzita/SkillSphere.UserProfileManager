@@ -94,15 +94,10 @@ public class UserProfileController : ControllerBase
     [HttpPost("profile")]
     [ProducesResponseType(typeof(UserProfileSummaryDto), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
-    public async Task<IActionResult> CreateProfile([FromBody] UserProfileRequestDto request)
+    public async Task<IActionResult> CreateProfile([FromForm] UserProfileRequestDto request)
     {
         var createCommand = _mapper.Map<CreateProfileCommand>(request);
         createCommand.UserId = _userAccessor.GetUserId();
-
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
 
         var result = await _mediator.Send(createCommand);
 
@@ -116,15 +111,10 @@ public class UserProfileController : ControllerBase
     [HttpPatch("profile")]
     [ProducesResponseType(typeof(UserProfileSummaryDto), 200)]
     [ProducesResponseType(typeof(List<string>), 400)]
-    public async Task<IActionResult> UpdateProfile([FromBody] UserProfileRequestDto request)
+    public async Task<IActionResult> UpdateProfile([FromForm] UserProfileRequestDto request)
     {
         var updateCommand = _mapper.Map<UpdateProfileCommand>(request);
         updateCommand.UserId = _userAccessor.GetUserId();
-
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
 
         var result = await _mediator.Send(updateCommand);
 

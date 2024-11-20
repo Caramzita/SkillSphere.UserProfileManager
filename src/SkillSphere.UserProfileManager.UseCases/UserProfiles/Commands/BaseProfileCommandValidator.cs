@@ -1,10 +1,13 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 
 namespace SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands;
 
 public class BaseProfileCommandValidator<T> : AbstractValidator<T>
     where T : IProfileCommand
 {
+    private readonly string[] _validImageExtensions = { ".jpg", ".jpeg", ".png", ".bmp" };
+
     protected BaseProfileCommandValidator()
     {
         RuleFor(command => command.Name)
@@ -16,16 +19,15 @@ public class BaseProfileCommandValidator<T> : AbstractValidator<T>
         RuleFor(command => command.Bio)
             .MaximumLength(200).WithMessage("Bio must not exceed 200 characters.");
 
-        RuleFor(command => command.ProfilePictureUrl)
-            .Must(IsValidUrl).WithMessage("ProfilePictureUrl must be a valid URL.")
-            .When(command => !string.IsNullOrEmpty(command.ProfilePictureUrl));
+        RuleFor(command => command.ProfilePicture)
+           .Must(BeAValidImage)
+           .WithMessage("Profile picture must be a valid image (jpg, jpeg, png, bmp).")
+           .When(command => command.ProfilePicture != null);
     }
 
-    private bool IsValidUrl(string? url)
+    private bool BeAValidImage(IFormFile file)
     {
-        if (string.IsNullOrEmpty(url))
-            return true;
-
-        return Uri.TryCreate(url, UriKind.Absolute, out _);
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        return _validImageExtensions.Contains(extension);
     }
 }

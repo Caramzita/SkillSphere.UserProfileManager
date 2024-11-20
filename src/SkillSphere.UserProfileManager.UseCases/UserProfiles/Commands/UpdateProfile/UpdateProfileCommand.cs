@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using SkillSphere.Infrastructure.UseCases;
 using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
 
@@ -10,14 +11,14 @@ public class UpdateProfileCommand : IRequest<Result<UserProfileSummaryDto>>, IPr
 
     public string Name { get; } = string.Empty;
 
-    public string? ProfilePictureUrl { get; } = string.Empty;
+    public IFormFile? ProfilePicture { get; }
 
     public string Bio { get; } = string.Empty;
 
-    public UpdateProfileCommand(string name, string bio, string? profilePictureUrl = null)
+    public UpdateProfileCommand(string name, string bio, IFormFile? profilePicture = null)
     {
         Name = name;
         Bio = bio;
-        ProfilePictureUrl = profilePictureUrl;
+        ProfilePicture = profilePicture;
     }
 }
