@@ -54,7 +54,7 @@ public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand,
 
         if (request.ProfilePicture != null)
         {
-            imageUrl = await _imageUploadService.UploadImageAsync(request.ProfilePicture);
+            imageUrl = await _imageUploadService.UploadImage(request.ProfilePicture);
         }
 
         var newProfile = new UserProfile(

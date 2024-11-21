@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Hosting;
 using SkillSphere.Infrastructure.UseCases;
 using SkillSphere.UserProfileManager.Core.Interfaces;
 
@@ -11,15 +10,15 @@ public class DeleteProfileCommandHandler : IRequestHandler<DeleteProfileCommand,
 
     private readonly IUserProfileRepository _userProfileRepository;
 
-    private readonly string _uploadsFolderPath;
+    private readonly IImageUploadService _imageUploadService;
 
     public DeleteProfileCommandHandler(IUnitOfWork unitOfWork, 
-        IUserProfileRepository userProfileRepository, 
-        IWebHostEnvironment environment)
+        IUserProfileRepository userProfileRepository,
+        IImageUploadService imageUploadService)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         _userProfileRepository = userProfileRepository ?? throw new ArgumentNullException(nameof(userProfileRepository));
-        _uploadsFolderPath = Path.Combine(environment.ContentRootPath, @"..\..\..\SkillSphere.Files");
+        _imageUploadService = imageUploadService ?? throw new ArgumentNullException(nameof(imageUploadService));
     }
 
     public async Task<Result<Unit>> Handle(DeleteProfileCommand request, CancellationToken cancellationToken)
@@ -33,20 +32,7 @@ public class DeleteProfileCommandHandler : IRequestHandler<DeleteProfileCommand,
 
         if (!string.IsNullOrEmpty(profile.ProfilePictureUrl))
         {
-            var fileName = Path.GetFileName(profile.ProfilePictureUrl);
-            var avatarPath = Path.Combine(_uploadsFolderPath, fileName);
-
-            try
-            {
-                if (File.Exists(avatarPath))
-                {
-                    File.Delete(avatarPath);
-                }
-            }
-            catch (Exception)
-            {
-                return Result<Unit>.Invalid("Ошибка при удалении изображения");
-            }
+            await _imageUploadService.DeleteImage(profile.ProfilePictureUrl);
         }
 
         _userProfileRepository.DeleteProfile(profile);

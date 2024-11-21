@@ -9,6 +9,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 RUN dotnet nuget add source http://host.docker.internal:5000/v3/index.json -n baget
+ENV NUGET_PACKAGES=/root/.nuget/packages
 
 COPY ["src/SkillSphere.UserProfileManager.API/SkillSphere.UserProfileManager.API.csproj", "src/SkillSphere.UserProfileManager.API/"]
 COPY ["src/SkillSphere.UserProfileManager.Contracts/SkillSphere.UserProfileManager.Contracts.csproj", "src/SkillSphere.UserProfileManager.Contracts/"]
@@ -28,4 +29,5 @@ RUN dotnet publish "./SkillSphere.UserProfileManager.API.csproj" -c $BUILD_CONFI
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
 ENTRYPOINT ["dotnet", "SkillSphere.UserProfileManager.API.dll"]

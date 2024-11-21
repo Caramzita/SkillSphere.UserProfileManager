@@ -35,12 +35,16 @@ public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand,
         {
             return Result<UserProfileSummaryDto>.Invalid("Профиль не существует");
         }
-
         var imageUrl = string.Empty;
 
         if (request.ProfilePicture != null)
         {
-            imageUrl = await _imageUploadService.UploadImageAsync(request.ProfilePicture);
+            imageUrl = await _imageUploadService.UploadImage(request.ProfilePicture);
+        }
+
+        if (!string.IsNullOrEmpty(existingProfile.ProfilePictureUrl))
+        {
+            await _imageUploadService.DeleteImage(existingProfile.ProfilePictureUrl);
         }
 
         existingProfile.Name = request.Name;

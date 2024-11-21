@@ -99,6 +99,14 @@ internal class Program
             client.BaseAddress = new Uri(configuration["AuthorizationService"]!);
         });
 
+        var uploadsFolderPath = Path.Combine(Directory.GetCurrentDirectory(), configuration["UploadsFolder"]!);
+        configuration["UploadsFolderPath"] = uploadsFolderPath;
+        Console.WriteLine($"Uploads folder path: {configuration["UploadsFolderPath"]}");
+
+        if (!Directory.Exists(uploadsFolderPath))
+        {
+            Directory.CreateDirectory(uploadsFolderPath);
+        }
 
         services.AddScoped<IUserAccessor, UserAccessor>();
 
@@ -128,9 +136,8 @@ internal class Program
 
         app.UseStaticFiles(new StaticFileOptions
         {
-            FileProvider = new PhysicalFileProvider(
-            Path.Combine(builder.Environment.ContentRootPath, @"..\..\..\SkillSphere.Files")),
-            RequestPath = "/SkillSphere.Files"
+            FileProvider = new PhysicalFileProvider(builder.Configuration["UploadsFolderPath"]!),
+            RequestPath = "/uploads"
         });
 
         app.UseHttpsRedirection();
