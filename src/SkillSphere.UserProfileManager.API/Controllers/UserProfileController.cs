@@ -73,15 +73,15 @@ public class UserProfileController : ControllerBase
     }
 
     /// <summary>
-    /// Проверить создан ли профиль пользователя.
+    /// Получить информацию о своем профиле.
     /// </summary>
-    [HttpGet("profile/check")]
-    [ProducesResponseType(typeof(bool), 200)]
-    public async Task<IActionResult> CheckProfile()
+    [HttpGet("profile")]
+    [ProducesResponseType(typeof(UserProfileDetailDto), 200)]
+    [ProducesResponseType(typeof(List<string>), 400)]
+    public async Task<IActionResult> GetMyProfile()
     {
         var userId = _userAccessor.GetUserId();
-        var command = new CheckProfileCommand(userId);
-
+        var command = new GetProfileQuery(userId);
         var result = await _mediator.Send(command);
 
         return result.ToActionResult();
