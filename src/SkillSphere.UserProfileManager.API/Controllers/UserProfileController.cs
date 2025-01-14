@@ -10,7 +10,6 @@ using SkillSphere.UserProfileManager.UseCases.UserProfiles.Queries.GetAllProfile
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.DeleteProfile;
 using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.UpdateProfile;
 using SkillSphere.UserProfileManager.Contracts.DTOs.UserProfile;
-using SkillSphere.UserProfileManager.UseCases.UserProfiles.Commands.CheckProfile;
 
 namespace SkillSphere.UserProfileManager.API.Controllers;
 

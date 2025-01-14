@@ -18,5 +18,10 @@ public class SkillCategoryCfg : IEntityTypeConfiguration<SkillCategory>
             .WithOne()
             .HasForeignKey(skill => skill.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasData(
+            new SkillCategory("Programming"),
+            new SkillCategory("Design & Creative")
+        );
     }
 }

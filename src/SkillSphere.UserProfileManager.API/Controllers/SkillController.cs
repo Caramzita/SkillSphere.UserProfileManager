@@ -52,30 +52,15 @@ public class SkillController : ControllerBase
         return _mediator.CreateStream(query);
     }
 
-    /// <summary>
-    /// Получить все навыки категории.
-    /// </summary>
-    /// <param name="categoryId"> Идентификатор категории. </param>
-    //[HttpGet("categories/{categoryId:guid}/skills")]
-    //[AllowAnonymous]
-    //[ProducesResponseType(typeof(SkillResponseDto), 200)]
-    //[ProducesResponseType(typeof(List<string>), 400)]
-    //public IAsyncEnumerable<SkillResponseDto> GetCategorySkills(Guid categoryId)
-    //{
-    //    var query = new GetCategorySkillsQuery(categoryId);
-
-    //    return _mediator.CreateStream(query);
-    //}
-
     ///// <summary>
     ///// Получить навык по идентификатору.
     ///// </summary>
     ///// <param name="skillId"> Идентификатор навыка. </param>
-    //[HttpGet("skills/{skillId:guid}")]
+    //[HttpPost("skills/{skillId:guid}")]
     //[AllowAnonymous]
     //[ProducesResponseType(typeof(SkillResponseDto), 200)]
     //[ProducesResponseType(typeof(List<string>), 400)]
-    //public async Task<IActionResult> GetSkillById(Guid skillId)
+    //public async Task<IActionResult> GetSkillsByIds(List<Guid> skillId)
     //{
     //    var command = new GetSkillByIdQuery(skillId);
 
